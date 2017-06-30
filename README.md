@@ -6,8 +6,9 @@
 
 ### 测试前准备
 1.  两部测试设备，正确连接好手机，可在终端里输入： adb devices 查看，如果正确显示出设备串号，则设备连接成功
-2. 解压test_Android.zip文件到本地
-3. 进入解压后的test_Android目录
+2. 测试设备的系统界面语言设置为英文
+3. 解压test_Android.zip文件到本地
+4. 进入解压后的test_Android目录
 
 ### 测试执行  
 Mac/ Linux:  
