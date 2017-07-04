@@ -1,4 +1,5 @@
 #coding=utf-8
+from collections import OrderedDict
 
 dic_Name = {}
 
@@ -22,5 +23,5 @@ dic_Group["B_exit"] = "B_exit"
 dic_Group["B_join"] = "B_join"
 dic_Group["member_invite"] = "member_invite"
 
-case_status = {}
+case_status = OrderedDict()
 

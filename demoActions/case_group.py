@@ -178,6 +178,7 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 	case_common.gotoGroup(driver1)
 	find_group(driver1, groupname)
 	case_common.click_name(driver1, groupname)
+	sleep(1)
 	goto_groupinfo(driver1)
 	add_groupmember(driver1,memberlist)
 	sleep(2)
@@ -211,13 +212,13 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 		print "< case end: fail >"
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
 		if ismemberinvite == 1:
-			mystr = "memberinvite"
+			mystr = ":memberinvite"
 		else:
-			mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+			mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 
 	return ret_status
 
@@ -264,10 +265,10 @@ def test_add_groupmember_refuse(driver1, driver2, groupname, testaccount, member
 		print "< case end: failed! >"
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 			
@@ -292,7 +293,7 @@ def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isad
 		el = find_memberElement(driver1,i)
 		el.click()
 		del_member(driver1)
-
+	sleep(3)
 	namelist = get_all_people(driver1)
 	for name in dellist:
 		if name in namelist:
@@ -321,10 +322,10 @@ def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isad
 	case_common.gotoConversation(driver2)
 	
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 def test_block_groupmember(driver1, driver2, groupname, testaccount, blockname, isadmincase):
@@ -347,7 +348,7 @@ def test_block_groupmember(driver1, driver2, groupname, testaccount, blockname, 
 	el.click()
 	add_group_blacklist(driver1)
 
-	sleep(2)
+	sleep(5)
 	Bgrouplist = get_grouplist(driver2)
 	if groupname in Bgrouplist:
 		print "Not received beBlocked notice!"
@@ -368,10 +369,10 @@ def test_block_groupmember(driver1, driver2, groupname, testaccount, blockname, 
 	case_common.gotoConversation(driver2)
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 def test_unblock_groupmember(driver1, groupname, unblock_name, isadmincase):
@@ -409,10 +410,10 @@ def test_unblock_groupmember(driver1, groupname, unblock_name, isadmincase):
 	case_common.gotoConversation(driver1)
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 def test_mute_groupmember(driver1, driver2, groupname, testaccount, mute_name, isadmincase):
@@ -461,10 +462,10 @@ def test_mute_groupmember(driver1, driver2, groupname, testaccount, mute_name, i
 	case_common.gotoConversation(driver1)
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 def test_unmute_groupmember(driver1, driver2, groupname, testaccount, unmute_name, isadmincase):
@@ -511,10 +512,10 @@ def test_unmute_groupmember(driver1, driver2, groupname, testaccount, unmute_nam
 	case_common.gotoConversation(driver1)
 
 	if isadmincase == 1:
-		mystr = "groupAdmin:"
+		mystr = ":groupAdmin"
 	else:
-		mystr = "groupOwner:"
-	case_status[mystr+sys._getframe().f_code.co_name] = ret_status
+		mystr = ":groupOwner"
+	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
 	return ret_status
 
 def test_add_admin(driver1, driver2, groupname, testaccount, adm_name):
@@ -594,7 +595,7 @@ def test_rm_admin(driver1, driver2, groupname, testaccount, adm_name):
 	el = find_adminElement(driver1,adm_name)
 	el.click()
 	rm_admin(driver1)
-	sleep(2)
+	sleep(5)
 	# 操作完成
 
 	mydic = get_group_roles(driver2)
@@ -777,7 +778,7 @@ def test_exit_group(driver1, driver2, membername, groupname):
 	case_common.back(driver1)
 	sleep(1)
 	case_common.back(driver1)
-	sleep(1)
+	sleep(2)
 	case_common.back(driver1)
 	case_common.gotoConversation(driver1)
 
@@ -937,8 +938,7 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 
 	test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["add_agree"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 0)
 	print "------------------------------------------------------------------------------------------------------------------"
-	test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["member_invite"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 1)
-	print "------------------------------------------------------------------------------------------------------------------"
+	
 	test_add_groupmember_refuse(driver1, driver2, groupname = dic_Group["add_refuse"], testaccount = userA, memberlist = [userB], isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_del_groupmember(driver1, driver2, groupname = dic_Group["del_member"], testaccount = userA, dellist = [userB], isadmincase = isadmincase)
@@ -952,6 +952,7 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 	test_unmute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, unmute_name = userB, isadmincase = isadmincase)		
 	
 	if isadmincase == 0:
+		test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["member_invite"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 1)
 		print "------------------------------------------------------------------------------------------------------------------"
 		test_add_admin(driver1, driver2, groupname = dic_Group["group0"], testaccount =userA, adm_name = userB)
 		print "------------------------------------------------------------------------------------------------------------------"

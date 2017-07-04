@@ -33,7 +33,7 @@ if __name__ == "__main__":
 		case_common.swipeUp(driver2)
 		sleep(2)
 		case_common.swipeUp(driver2)
-		sleep(2)
+		sleep(3)
 		case_group.close_AutoAcceptGroupInvitation(driver2)
 		sleep(2)
 		case_common.gotoConversation(driver2)
@@ -62,6 +62,28 @@ if __name__ == "__main__":
 	print "pass %d: " %len(passlist)
 	for i in passlist:
 		print "	"+i
+
+
+	# caselist = []
+	# f = open("./caseList.txt","r")
+	# lines = f.readlines()
+
+	# for line in lines:
+	# 	str1 = line[:-1]
+	# 	caselist.append(str1)
+
+
+	# norunlist = []
+	# for case in caselist:
+	# 	if (case not in passlist) & (case not in faillist):
+	# 		norunlist.append(case)
+	# if norunlist == []:
+	# 	print "no-run list: None."
+	# else:
+	# 	print "no-run list:"
+	# 	for case in norunlist:
+	# 		print case
+
 	
 
 

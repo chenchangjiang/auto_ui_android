@@ -27,7 +27,7 @@ def startDemo1():
 	desired_caps['unicodeKeyboard']='true'
 	desired_caps['resetKeyboard']='true'
 	# desired_caps['automationName'] = 'Uiautomator2'
-	desired_caps['noReset'] = 'true'
+	# desired_caps['noReset'] = 'true'
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
