@@ -32,6 +32,7 @@ if __name__ == "__main__":
 		case_common.gotoSetting(driver2)
 		case_common.swipeUp(driver2)
 		sleep(2)
+		case_common.swipeUp(driver2)
 		case_group.close_AutoAcceptGroupInvitation(driver2)
 		sleep(2)
 		case_common.gotoConversation(driver2)
