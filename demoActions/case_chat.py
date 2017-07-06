@@ -575,7 +575,7 @@ def test_send_chatroomMsg_audio(driver):
 	print "---------------------------------------------------------"
 	return ret_status
 
-def test_rcv_msg(driver,fromname,msgcontent,msgtype):
+def test_rcv_msg(driver,fromname,msgcontent,msgtype,chattype):
 
 	print "< case start: receive online msg >"
 
@@ -587,7 +587,7 @@ def test_rcv_msg(driver,fromname,msgcontent,msgtype):
 	else:
 		print "< case end: fail >"
 
-	case_status[sys._getframe().f_code.co_name+"_"+msgtype] = ret_status
+	case_status[sys._getframe().f_code.co_name+"_"+msgtype+"_"+chattype] = ret_status
 	print "---------------------------------------------------------"
 	return ret_status
 
@@ -630,7 +630,7 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	
 	test_send_msg_txt(driver1,chattype,msgcontent)
 	print "------------------------------------------------------------------------------------------------------------------"
-	test_rcv_msg(driver2,fromname,msgcontent,msgtype)
+	test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_read_msg(driver2,fromname,msgtype)
 	print "------------------------------------------------------------------------------------------------------------------"
@@ -648,7 +648,7 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	sleep(2)
 	case_common.click_name(driver1,toname)
 	test_send_msg_audio(driver1,chattype)
-	test_rcv_msg(driver2,fromname,msgcontent,msgtype)
+	test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
 	test_read_msg(driver2,fromname,msgtype)
 	case_common.back(driver2)
 	test_rcv_readAck(driver1,msgtype)
@@ -667,7 +667,7 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	# sleep(1)
 	# open_richMsglist(driver1)
 	# test_send_msg_location(driver1,chattype)
-	# test_rcv_msg(driver2,fromname,msgcontent,msgtype)
+	# test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
 	# test_read_msg(driver2,fromname,msgtype)
 	# clear_msg(driver2)
 	# case_common.back(driver2)
@@ -684,7 +684,7 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	# case_common.click_name(driver1, toname)
 	# open_richMsglist(driver1)
 	# test_send_msg_pic(driver1,chattype,msgcontent)
-	# test_rcv_msg(driver2, fromname, msgcontent,msgtype)
+	# test_rcv_msg(driver2, fromname, msgcontent,msgtype,chattype)
 	# test_read_msg(driver2, fromname, msgtype)
 	# clear_msg(driver2)
 	# case_common.back(driver2)
@@ -706,7 +706,7 @@ def testset_group_chat(driver1, driver2, fromname, groupname):
 	msgtype = "text"
 	clear_groupmsg(driver1)
 	test_send_msg_txt(driver1,chattype,msgcontent)
-	test_rcv_msg(driver2,groupname,msgcontent,msgtype)
+	test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
 	
 	print "------------------------------------------------------------------------------------------------------------------"
 	msgcontent = "[语音]"
@@ -714,7 +714,7 @@ def testset_group_chat(driver1, driver2, fromname, groupname):
 
 	clear_groupmsg(driver1)
 	test_send_msg_audio(driver1,chattype,msgcontent)
-	test_rcv_msg(driver2,groupname,msgcontent,msgtype)	
+	test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)	
 	
 	# print "-------------------------------------------------------------------------------------------------"
 	# msgcontent = "[%s location]" %fromname
@@ -725,7 +725,7 @@ def testset_group_chat(driver1, driver2, fromname, groupname):
 	# clear_groupmsg(driver1)
 	# open_richMsglist(driver1)
 	# test_send_msg_location(driver1,msgcontent)
-	# test_rcv_msg(driver2,groupname,msgcontent,msgtype)
+	# test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
 
 	# print "-------------------------------------------------------------------------------------------------"
 	# msgcontent = "[Picture]"
@@ -736,7 +736,7 @@ def testset_group_chat(driver1, driver2, fromname, groupname):
 	# clear_groupmsg(driver1)
 	# open_richMsglist(driver1)
 	# test_send_msg_pic(driver1,chattype,msgcontent)
-	# test_rcv_msg(driver2,groupname,msgcontent,msgtype)
+	# test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
 
 	
 	case_common.back(driver1)

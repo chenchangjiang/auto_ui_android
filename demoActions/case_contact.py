@@ -162,8 +162,15 @@ def test_add_friend(driver1,driver2,fromname,toname):
 	case_common.gotoContact(driver2)
 	case_common.find_notice(driver2,fromname)
 	accept_friend_invite(driver2,fromname)
+
 	case_common.back(driver1)
 	case_common.back(driver2)
+
+	isContactScreen = case_common.isContactScreen(driver2) #检查是否回到了contact_list界面，如果没有回到contact list界面则：loop(等待1s，再执行一次back)
+	while not isContactScreen:
+		sleep(1)
+		case_common.back(driver2)
+		isContactScreen = case_common.isContactScreen(driver2)
 	
 	list1 = get_friendList(driver1)
 	list2 = get_friendList(driver2)

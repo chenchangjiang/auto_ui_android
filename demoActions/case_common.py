@@ -31,7 +31,7 @@ def startDemo1():
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
-	driver.implicitly_wait(20)
+	driver.implicitly_wait(5)
 	return driver
 	
 def startDemo2():
@@ -44,6 +44,7 @@ def startDemo2():
 	desired_caps['appActivity'] = 'com.hyphenate.chatuidemo.ui.SplashActivity'
 	desired_caps['unicodeKeyboard']='true'
 	desired_caps['resetKeyboard']='true'
+	# desired_caps['noReset'] = 'true'
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:4728/wd/hub', desired_caps)
@@ -60,6 +61,19 @@ def gotoBlacklist(driver):
 def gotoContact(driver):
 	contactButton = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_address_list")
 	contactButton.click()
+
+def isContactScreen(driver):
+	ret_status = False
+
+	l1 = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_address_list")
+	if l1 != []:
+		print "now is in contacts screen"
+		ret_status = True
+	else:
+		print "not in contacts screen!"
+
+	return ret_status
+
 	
 def gotoGroup(driver):
 	groupButton = driver.find_element_by_xpath("//android.widget.TextView[@text='Group chat']")

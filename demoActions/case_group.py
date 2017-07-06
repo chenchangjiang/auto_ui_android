@@ -11,11 +11,12 @@ from appium import webdriver
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support import expected_conditions as EC
 
 import case_common
 import restHelper
 import case_chat
+import case_account
 
 
 def get_grouplist(driver):
@@ -37,7 +38,12 @@ def get_grouplist(driver):
 
 def goto_groupinfo(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/right_layout").click()
-	sleep(3)
+	# sleep(2)
+	mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
+	while mylist != []:
+		# sleep(1)
+		mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
+
 	# list1 = driver.find_elements_by_xpath("android.widget.ProgressBar")
 	# while list1 != []:
 	# 		list1 = driver.find_elements_by_xpath("android.widget.ProgressBar")
@@ -811,16 +817,26 @@ def test_join_group(driver1, driver2, applyer, owner, groupname):
 		accept_groupapply(driver1,groupname)
 		print "A agreed apply."
 
-	sleep(3)
-	Bgrouplist = get_grouplist(driver2)
-	if groupname in Bgrouplist:
+	try:
+		WebDriverWait(driver1,10).until(EC.visibility_of_element_located((By.XPATH,"//android.widget.TextView[@text='%s']"%groupname)))
 		print "B received owner-agree notice succuess!"
 		print "B joined group success!"
 		print "< case end: pass>"
-		ret_status = True
-	else:
+		ret_status = True 
+	except:
 		print "B not receive A agree notice"
-		print "< case end: fail >"
+		print "<case end: fail >"
+
+	# sleep(3)
+	# Bgrouplist = get_grouplist(driver2)
+	# if groupname in Bgrouplist:
+	# 	print "B received owner-agree notice succuess!"
+	# 	print "B joined group success!"
+	# 	print "< case end: pass>"
+	# 	ret_status = True
+	# else:
+	# 	print "B not receive A agree notice"
+	# 	print "< case end: fail >"
 
 	case_common.back(driver2)
 	case_common.gotoConversation(driver2)
@@ -982,9 +998,11 @@ if __name__ == "__main__":
 
 	userA = accountA
 	userB = accountB
-	# driver1 = case_common.startDemo1()
-	driver2 = case_common.startDemo2()
-	case_common.gotoContact(driver2)
-	case_common.gotoGroup(driver2)
-	find_group(driver2,"oooppp")
+	driver1 = case_common.startDemo1()
+	name = "GK1"
+	print name
+	WebDriverWait(driver1,60).until(EC.visibility_of_element_located((By.XPATH,"//android.widget.TextView[@text='%s']"%name)))
+	print "Found target."
+
+	
 	print "\nend test."

@@ -14,6 +14,8 @@ import traceback
 
 if __name__ == "__main__":
 	try:
+		t1 = time.time()
+
 		init.init_all()
 
 		driver1 = startDemo1()
@@ -44,9 +46,17 @@ if __name__ == "__main__":
 	
 	except Exception, e:
 		print traceback.print_exc()
-	
+
+	#计算下整个测试完成所花费的时间
+	t2 = time.time()  
+	t = (t2-t1)
+	str_min = str(int(t/60))
+	str_sec = str(int(t%60))
+	test_duration = str_min+":"+str_sec  
+
 	print "#####################################################################################################"
-	print "test done."	
+	print "test done. test time: %s" %test_duration
+
 	passlist = []
 	faillist = []
 	norunlist = []
@@ -64,25 +74,28 @@ if __name__ == "__main__":
 		print "	"+i
 
 
-	# caselist = []
-	# f = open("./caseList.txt","r")
-	# lines = f.readlines()
+	cur_path = os.getcwd()
+	print "cur_path: "+cur_path
+	
+	caselist = []
+	f = open(r"./demoActions/caseList.txt","r")
+	lines = f.readlines()
 
-	# for line in lines:
-	# 	str1 = line[:-1]
-	# 	caselist.append(str1)
+	for line in lines:
+		str1 = line[:-1]
+		caselist.append(str1)
 
 
-	# norunlist = []
-	# for case in caselist:
-	# 	if (case not in passlist) & (case not in faillist):
-	# 		norunlist.append(case)
-	# if norunlist == []:
-	# 	print "no-run list: None."
-	# else:
-	# 	print "no-run list:"
-	# 	for case in norunlist:
-	# 		print case
+	norunlist = []
+	for case in caselist:
+		if (case not in passlist) & (case not in faillist):
+			norunlist.append(case)
+	if norunlist == []:
+		print "no-run list: None."
+	else:
+		print "no-run list:"
+		for case in norunlist:
+			print "\t"+case
 
 	
 
