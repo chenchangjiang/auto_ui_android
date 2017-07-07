@@ -191,8 +191,9 @@ def testset_chatroom(driver1, accountA):
 	# accountA join chatroom
 	print "*************---testset chatroom---*************"
 	if test_get_chatroomlist(driver1):
-		roomname = get_first_roomname(driver1)
-		roomid = restHelper.get_roomid(roomname)
+		roominfo = restHelper.get_joinroominfo()
+		roomid = roominfo[0]
+		roomname = roominfo[1]
 		restHelper.send10chatroommsg(roomid)
 		if test_join_chatroom(driver1, testaccount = accountA, roomname = roomname):
 			test_get_10_historymsg(driver1)

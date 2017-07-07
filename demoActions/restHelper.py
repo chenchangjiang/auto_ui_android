@@ -27,6 +27,16 @@ def set_admin(groupid,membername):
 		print 'error code', e.code
 		print 'error msg',e.read()
 #注销账号
+def get_joinroominfo():
+	myurl = "http://%s/%s/%s/chatrooms?pagenum=1&pagesize=20" %(resturl,org,appkey)
+
+	resp = requests.get(url=myurl,headers=myheaders)
+	result = json.loads(resp.text).get("data")
+	roomid = result[1].get("id")
+	roomname = result[1].get("name")
+	room_info = [roomid,roomname]
+	return room_info
+
 
 def get_roomid(roomname):
 	myurl= "http://%s/%s/%s/chatrooms" % (resturl,org,appkey)
@@ -518,9 +528,11 @@ def send10chatroommsg(roomid):
 
 
 if __name__ == "__main__":
-	newtoken = get_token()
-	print "new token:"
-	print newtoken
+	# newtoken = get_token()
+	# print "new token:"
+	# print newtoken
+	l1 = get_roominfo()
+	print l1
 
 
 	

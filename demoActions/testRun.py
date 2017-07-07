@@ -31,7 +31,7 @@ if __name__ == "__main__":
 		testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
 
 		
-		testset_chatroom(driver1, accountA)
+		# testset_chatroom(driver1, accountA)
 		case_common.gotoSetting(driver2)
 		case_common.swipeUp(driver2)
 		sleep(2)
