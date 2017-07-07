@@ -147,5 +147,5 @@ def testset_account(driver):
 	print "------------------------------------------------------------------------------------------------------------------"
 
 if __name__ == "__main__":
-	driver = startDemo()
-	testset_account(driver)
+	driver = startDemo1()
+	test_login(driver,"k1","1")

@@ -690,7 +690,6 @@ def test_create_group(driver1, groupname, grouptype):
 	print "< case start: create %s group >" %grouptype
 	case_common.gotoContact(driver1)
 	case_common.gotoGroup(driver1)
-	find_group(driver1, groupname)
 	case_common.click_name(driver1, "Create new group")
 	driver1.find_element_by_id("com.hyphenate.chatuidemo:id/edit_group_name").send_keys(groupname)
 	if grouptype == "gk1":

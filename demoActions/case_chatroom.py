@@ -9,6 +9,7 @@ import restHelper
 import case_chat
 from appium import webdriver
 from appium.webdriver.common.touch_action import TouchAction
+from testdata import *
 
 def create_chatroom(driver,roomname):
 	ret_status = False
@@ -105,22 +106,29 @@ Or this room has less than 10 history msg, please check and retry again!"""
 
 	return ret_status
 
+def get_first_roomname(driver):
+	els = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")
+	roomname = els[1].get_attribute("text")
+	return roomname
+
 # ///////////////////////////////////////////
 
 def test_get_chatroomlist(driver):
 	ret_status = False
 
+	print "------------------------------------------------------------------------------------------------------------------"
+	print "<case start: get_chatroomlist >"
 	case_common.gotoContact(driver)
 	case_common.gotoChatroomlist(driver)
 
 	roomlist = driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/*") # 获取聊天室列表条目
 	if len(roomlist) > 0:
 		print "get chatroomlist success!"
-		print "case pass！"
+		print "< case end: pass. >"
 		ret_status = True
 	else:
 		print "get chatroomlist failed!"
-		print "case falied!"
+		print "< case end: failed. >!"
 		ret_status = False
 
 		case_common.back(driver)
@@ -132,17 +140,30 @@ def test_get_chatroomlist(driver):
 def test_join_chatroom(driver,testaccount,roomname):
 	ret_status = False
 	
+	print "------------------------------------------------------------------------------------------------------------------"
+	print "< case start: join_chatroom >"
 	case_common.gotoChatroomlist(driver)
 	if get_chatroomlist(driver):
 		join_chatroom(driver,roomname)
 		if join_sucess(roomname,testaccount):
 			ret_status = True
+			print "< case end: pass. >"
+		else:
+			print "< case end: failed. >"
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 def test_get_10_historymsg(driver):
+	print "------------------------------------------------------------------------------------------------------------------"
+	print "< case start: get_10_historymsg >"
 	ret_status = get_10_historymsg(driver)
+
+	if ret_status == True:
+		print "< case end: pass. >"
+	else:
+		print "< case end: failed. >"
+
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
@@ -150,9 +171,14 @@ def test_get_10_historymsg(driver):
 def test_leave_chatroom(driver,testaccount,roomname): 
 	ret_status = False
 
+	print "------------------------------------------------------------------------------------------------------------------"
+	print "< case start: leave_chatroom >"
 	leave_chatroom(driver)
 	if leave_sucess(testaccount,roomname):
 		ret_status = True
+		print "< case end: pass. >"
+	else:
+		print "< case end: failed. >"
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
@@ -161,10 +187,11 @@ def test_leave_chatroom(driver,testaccount,roomname):
 # 	create_chatroom(driver,roomname)
 # 	if restHelper
 	
-def testset_chatroom(driver1, accountA, roomname):
+def testset_chatroom(driver1, accountA):
 	# accountA join chatroom
 	print "*************---testset chatroom---*************"
 	if test_get_chatroomlist(driver1):
+		roomname = get_first_roomname(driver1)
 		roomid = restHelper.get_roomid(roomname)
 		restHelper.send10chatroommsg(roomid)
 		if test_join_chatroom(driver1, testaccount = accountA, roomname = roomname):
@@ -177,8 +204,8 @@ def testset_chatroom(driver1, accountA, roomname):
 	
 
 if __name__ == "__main__":
-	driver1 = case_common.startDemo2()
-
-	testset_chatroom(driver1,"myat1","zz")
+	driver1 = case_common.startDemo1()
+	# case_account.test_login(driver1,"no1","1")
+	testset_chatroom(driver1,"no1")
 
 
