@@ -5,11 +5,13 @@ import requests
 import json
 import case_account
 import case_common
+import case_group
 import restHelper
 import case_chat
 from appium import webdriver
 from appium.webdriver.common.touch_action import TouchAction
 from testdata import *
+from time import sleep
 
 def create_chatroom(driver,roomname):
 	ret_status = False
@@ -202,7 +204,173 @@ def testset_chatroom(driver1, accountA):
 			test_leave_chatroom(driver1, testaccount = accountA, roomname = roomname)
 			case_common.back(driver1)
 			case_common.gotoConversation(driver1)
-	
+
+def chatroom_details(driver,roomname):
+	driver.find_element_by_id('com.hyphenate.chatuidemo:id/right_image').click()
+
+def chatroom_member_manage(driver,roomname,member):
+	el = case_group.find_memberElement(driver1,member)
+	el.click()
+
+def chatroom_admin_manage(driver,roomname,adm_name):
+	el = case_group.find_adminElement(driver1,adm_name)
+	el.click()
+
+# Add Member to Admin
+def test_add_admin(driver1, driver2, roomname, adm_name):
+	ret_status = False
+
+	chatroom_details(driver1,roomname)
+	chatroom_member_manage(driver1,roomname,adm_name)
+	case_group.add_admin(driver1)
+	sleep(5)
+
+	mydic = case_group.get_group_roles(driver1)
+	if adm_name in mydic["adminlist"]:
+		ret_status = True
+		print "%s received +admin notice sucess!" %(adm_name)
+		print "< case end: pass >"
+	else:
+		print "%s not receive +admin notice, fail!" %(adm_name)
+		print "< case end: fail >"
+
+	str1 = 'chatroom'
+
+	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	return ret_status
+
+# Remove Member from Admin
+def test_rm_admin(driver1, driver2, roomname, adm_name):
+	ret_status = False
+
+	chatroom_admin_manage(driver1,roomname,adm_name)
+	case_group.rm_admin(driver1)
+	sleep(5)
+
+	mydic = case_group.get_group_roles(driver1)
+	if adm_name not in mydic["adminlist"]:
+		ret_status = True
+		print "%s received -admin notice sucess!" %(adm_name)
+		print "< case end: pass >"
+	else:
+		print "%s not receive -admin notice, fail!" %(adm_name)
+		print "< case end: fail >"
+
+	str1 = 'chatroom'
+
+	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	return ret_status
+
+# Mute a Chatroom Member
+def test_mute_chatroommember(driver1,driver2,roomname,mute_name):
+	ret_status = False
+
+	chatroom_details(driver1,roomname)
+	chatroom_member_manage(driver1,roomname,mute_name)
+	case_group.mute(driver1)
+	sleep(5)
+
+	case_chat.send_chatroomMsg_txt(driver2,"test msg!")
+
+
+	if not case_chat.send_chatroomMsg_txt(driver2,"test msg!"):
+		print "mute %s sucess!" %(mute_name)
+		ret_status = True
+		print "< case end: pass >"
+	else:
+		print "< case end: fail >"
+
+	str1 = 'chatroom'
+
+	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	return ret_status
+
+# Unmute a Chatroom Member
+def test_unmute_chatroommember(driver1,driver2,roomname,unmute_name):
+	ret_status = False
+
+	chatroom_member_manage(driver1,roomname,unmute_name)
+	case_group.unmute(driver1)
+	sleep(5)
+
+	case_chat.send_chatroomMsg_txt(driver2,'test msg!')
+
+	if case_chat.send_chatroomMsg_txt(driver2,"test msg!"):
+		print "unmute %s sucess!" %(unmute_name)
+		ret_status = True
+		print "< case end: pass >"
+	else:
+		print "< case end: fail >"
+
+	str1 = "chatroom"
+	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	return ret_status
+
+
+# Kick Member out of Chatroom
+def test_kick_out_chatroommember(driver1,driver2,roomname,member):
+	ret_status = False
+
+	chatroom_member_manage(driver1,roomname,member)
+	case_group.del_member(driver1)
+	sleep(5)
+
+	if leave_sucess(member,roomname):
+		print "kick %s out of chatroom sucess!" %(member)
+		ret_status = True
+		print "< case end: pass >"
+	else:
+		print "< case end: fail >"
+
+	str1 = "chatroom"
+	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	return ret_status
+
+# Blcok Chatroom Member
+def test_block_roommember(driver1,driver2,roomname,member):
+	ret_status = False
+
+	join_chatroom(driver2,roomname)
+
+	chatroom_member_manage(driver1,roomname,member)
+	case_group.add_group_blacklist(driver1)
+	sleep(5)
+
+	join_chatroom(driver2,roomname)
+
+
+	if not join_sucess(roomname,member):
+		print "Block %s sucess!" %(member)
+		ret_status = True
+		print "< case end: pass >"
+	else:
+		print "< case end: fail >"
+
+	str1 = "chatroom"
+	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	return ret_status
+
+# Unblock Chatroom Member
+def test_unblock_roommember(driver1,driver2,roomname,member):
+	ret_status = False
+
+	chatroom_member_manage(driver1,roomname,member)
+	case_group.rm_group_blacklist(driver1)
+	sleep(5)
+
+	join_chatroom(driver2,roomname)
+
+
+	if join_sucess(roomname,member):
+		print "Unblock %s sucess!" %(member)
+		ret_status = True
+		print "< case end: pass >"
+	else:
+		print "< case end: fail >"
+
+	str1 = "chatroom"
+	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	return ret_status		
 
 if __name__ == "__main__":
 	driver1 = case_common.startDemo1()
