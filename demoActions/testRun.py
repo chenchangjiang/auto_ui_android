@@ -6,6 +6,7 @@ from case_contact import *
 from case_chat import *
 from case_group import *
 from case_chatroom import *
+from case_call import *
 from testdata import *
 import init
 import os
@@ -44,6 +45,7 @@ if __name__ == "__main__":
 		testset_group(driver1, driver2, dic_Group, isadmincase = 0)
 		init.group_Broles2()
 		testset_group(driver1, driver2, dic_Group, isadmincase = 1)
+		testset_call(driver1, driver2, userA = accountA, userB = accountB)
 	
 	except Exception, e:
 		print traceback.print_exc()
@@ -97,12 +99,6 @@ if __name__ == "__main__":
 		print "no-run list:"
 		for case in norunlist:
 			print "\t"+case
-
-	
-
-
-
-	
 
 
 

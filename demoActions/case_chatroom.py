@@ -189,7 +189,7 @@ def test_leave_chatroom(driver,testaccount,roomname):
 # 	create_chatroom(driver,roomname)
 # 	if restHelper
 	
-def testset_chatroom(driver1, accountA):
+def testset_chatroom(driver1, driver2, accountA, accountB):
 	# accountA join chatroom
 	print "*************---testset chatroom---*************"
 	if test_get_chatroomlist(driver1):
@@ -201,6 +201,15 @@ def testset_chatroom(driver1, accountA):
 			test_get_10_historymsg(driver1)
 			case_chat.test_send_chatroomMsg_txt(driver1, msgcontent = "KK999")
 			case_chat.test_send_chatroomMsg_audio(driver1)
+
+			# test_add_admin(driver1, driver2, roomname, adm_name = accountB)
+			# test_rm_admin(driver1, driver2, roomname, adm_name = accountB)
+			# test_mute_chatroommember(driver1, driver2, roomname, mute_name = accountB)
+			# test_unmute_chatroommember(driver1, driver2, roomname, unmute_name = accountB)
+			# test_kick_out_chatroommember(driver1, driver2,roomname, member = accountB)
+			# test_block_roommember(driver1, driver2, roomname, member = accountB)
+			# test_unblock_roommember(driver1, driver2, roomname, member = accountB)
+
 			test_leave_chatroom(driver1, testaccount = accountA, roomname = roomname)
 			case_common.back(driver1)
 			case_common.gotoConversation(driver1)
@@ -236,7 +245,7 @@ def test_add_admin(driver1, driver2, roomname, adm_name):
 
 	str1 = 'chatroom'
 
-	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
 	return ret_status
 
 # Remove Member from Admin
@@ -258,7 +267,7 @@ def test_rm_admin(driver1, driver2, roomname, adm_name):
 
 	str1 = 'chatroom'
 
-	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
 	return ret_status
 
 # Mute a Chatroom Member
@@ -282,7 +291,7 @@ def test_mute_chatroommember(driver1,driver2,roomname,mute_name):
 
 	str1 = 'chatroom'
 
-	case_status[sys._getframe().f_code.co_name+'_'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
 	return ret_status
 
 # Unmute a Chatroom Member
@@ -303,7 +312,7 @@ def test_unmute_chatroommember(driver1,driver2,roomname,unmute_name):
 		print "< case end: fail >"
 
 	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
 	return ret_status
 
 
@@ -323,7 +332,7 @@ def test_kick_out_chatroommember(driver1,driver2,roomname,member):
 		print "< case end: fail >"
 
 	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
 	return ret_status
 
 # Blcok Chatroom Member
@@ -347,7 +356,7 @@ def test_block_roommember(driver1,driver2,roomname,member):
 		print "< case end: fail >"
 
 	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
 	return ret_status
 
 # Unblock Chatroom Member
@@ -369,7 +378,7 @@ def test_unblock_roommember(driver1,driver2,roomname,member):
 		print "< case end: fail >"
 
 	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+"_"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
 	return ret_status		
 
 if __name__ == "__main__":
