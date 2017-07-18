@@ -37,7 +37,7 @@ def groups():
 	memberlist1 = [accountC]
 	for groupname in dic_Group.values(): 
 		if groupname != dic_Group["member_invite"]:
-			create_group(groupname,True,"myat1",memberlist1)
+			create_group(groupname,True,accountA,memberlist1)
 
 	create_group(dic_Group["member_invite"], False, accountC, [accountA], True)
 
