@@ -11,6 +11,11 @@ org='easemob-demo'
 appkey='chatdemoui'
 token='YWMtyx5ZKl-9EeeUOX-hZEvslwAAAAAAAAAAAAAAAAAAAAGP-MBq3AgR45fkRZpPlqEwAQMAAAFdB0NeiwBPGgCpIHQ1S3RGEEjA4m9uavApAPqnD5VdMOXgZQcVztxuSQ'
 
+# resturl='118.193.28.212:31080'
+# org='easemob-demo'
+# appkey='chatdemoui'
+# token='YWMt36LYAEHKEeeaYfHBn3KNXQAAAV13-wGAALEi1sK3m5e6P7l-r2XSpikRm98'
+
 myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
 
 def set_admin(groupid,membername):
@@ -214,7 +219,7 @@ def del_group(groupID):
 #删除群组'mygroup1'
 
 def search_account(name):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/users/%s" %name
+	myurl = "http://%s/%s/%s/users/%s" %(resturl,org,appkey,name)
 	
 	res = requests.get(url=myurl,headers=myheaders)
 	res_dic = json.loads(res.text)
@@ -223,7 +228,7 @@ def search_account(name):
 	return myresult
 	
 def ordermsg(fromname,toname,content):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/messages"
+	myurl = "http://%s/%s/%s/messages" %(restrul,org,appkey)
 	msgcontent = content
 	mydata = { "target_type":'users',"target":[toname],"msg":{"type":"txt","msg":msgcontent},"from":fromname}
 	print "send rest order msg: %s.." %msgcontent
@@ -238,7 +243,7 @@ def ordermsg(fromname,toname,content):
 		print 'error msg',e.read()
 		
 def sendmsg(fromname='myRest',toname='at1',number=5,msgtype='users'):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/messages"
+	myurl = "http://%s/%s/%s/messages" %(resturl,org,appkey)
 
 	for i in range(number):
 		msgcontent = "testmsg"+str(i)
@@ -255,7 +260,7 @@ def sendmsg(fromname='myRest',toname='at1',number=5,msgtype='users'):
 		time.sleep(0.5)
 
 def send10chatroommsg(roomid):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/messages"
+	myurl = "http://%s/%s/%s/messages" %(resturl,org,appkey)
 	
 	for i in range(10):
 		data = { "target_type":"chatrooms","target":[roomid],"msg":{"type":"txt","msg":str(i) },"from":"test2"}
@@ -271,7 +276,7 @@ def send10chatroommsg(roomid):
 		sleep(1)
 		
 def ifpublicgroup(groupid):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/chatgroups/%s" %groupid
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,appkey,groupid)
 
 	res = requests.get(url=myurl,headers=myheaders)
 	res_dic = json.loads(res.text)
@@ -281,7 +286,7 @@ def ifpublicgroup(groupid):
 	return ifpublic
 	
 def if_memberinvit(groupid):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/chatgroups/%s" %groupid
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,appkey,groupid)
 
 	res = requests.get(url=myurl,headers=myheaders)
 	res_dic = json.loads(res.text)
@@ -291,7 +296,7 @@ def if_memberinvit(groupid):
 	return ifallowinvite
 	
 def get_groupid(username,groupname):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/users/%s/joined_chatgroups" %username
+	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl,org,appkey,username)
 	myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
 
 	res = requests.get(url=myurl,headers=myheaders)
@@ -363,7 +368,7 @@ def get_friendList(name):
 	return friendlist
 
 def get_groupname_with_id(groupid):
-	myurl = "http://a1.easemob.com/easemob-demo/chatdemoui/chatgroups/%s" %groupid
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,appkey,groupid)
 	myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
 	try:
 		res = requests.get(url=myurl,headers=myheaders)
@@ -510,7 +515,7 @@ def sendmsg_multi_senders():
 	t.join()
 
 def send10chatroommsg(roomid):
-	myurl = "https://a1.easemob.com/easemob-demo/chatdemoui/messages"
+	myurl = "https://%s/%s/%s/messages" %(resturl,org,appkey)
 	myheaders = myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
 	
 	for i in range(10):
@@ -528,11 +533,6 @@ def send10chatroommsg(roomid):
 
 
 if __name__ == "__main__":
-	# newtoken = get_token()
-	# print "new token:"
-	# print newtoken
-	l1 = get_roominfo()
-	print l1
-
-
-	
+	newtoken = get_token()
+	print "new token:"
+	print newtoken
