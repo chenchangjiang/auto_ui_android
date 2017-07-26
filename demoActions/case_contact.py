@@ -125,11 +125,12 @@ def get_friendBlacklist(driver):
 	
 def accept_friend_invite(driver,fromname):
 
-	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%fromname)
+	list = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%fromname)
 	if list == []:
 		print "cannot find any notice!"
 		raise
 	for i in list:
+		print i.get_attribute("text")
 		if i.get_attribute("text") == "Agree":
 			print "now B try to agree"
 			i.click()
@@ -265,7 +266,7 @@ def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC =
 	case_account.switch_user(driver2, replacename = accountB)
 	
 if __name__ == "__main__":
-	driver1 = case_common.startDemo2()
-	driver2 = case_common.startDemo()
+	driver1 = case_common.startDemo1()
+	driver2 = case_common.startDemo2()
 
-	testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
+	test_add_friend(driver1, driver2, "lst1111", 'lst3333')

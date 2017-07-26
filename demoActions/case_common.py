@@ -11,7 +11,6 @@ dinfo_dic = get_device.get_deviceinfo()
 
 deviceid1 = dinfo_dic.keys()[0]
 dversion1 = dinfo_dic.values()[0]
-
 deviceid2 = dinfo_dic.keys()[1]
 dversion2 = dinfo_dic.values()[1]
 # assert deviceid != "No device detected! \nplease reconnect your devices!"
@@ -65,7 +64,7 @@ def gotoContact(driver):
 def isContactScreen(driver):
 	ret_status = False
 
-	l1 = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_address_list")
+	l1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/btn_address_list")
 	if l1 != []:
 		print "now is in contacts screen"
 		ret_status = True
@@ -87,6 +86,9 @@ def click_name(driver,name):
 
 def back(driver):
 	driver.press_keycode(4)
+
+def back_home(driver):
+	driver.press_keycode(3)
 
 def back2(driver):
 	driver.find_element_by_xpath("//android.widget.ImageView").click()
@@ -138,17 +140,17 @@ def find_notice(driver,fromname):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	
-	buttom_el_text0 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
+	buttom_el_text0 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")[-1].get_attribute("text")
 	print "text0: ",buttom_el_text0
 	swipeUp(driver)
-	buttom_el_text1 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
+	buttom_el_text1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")[-1].get_attribute("text")
 	print "text1 ", buttom_el_text1
 	while buttom_el_text0 != buttom_el_text1:
 		swipeUp(driver)
 		buttom_el_text0 = buttom_el_text1
-		buttom_el_text1 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")	
+		buttom_el_text1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")[-1].get_attribute("text")	
 
-	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%fromname)
+	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%fromname)
 	for i in list:
 		if i.get_attribute("text") == "Agree":
 			ret_status = True
@@ -293,10 +295,11 @@ def name_is_inScreen(driver,name):
 
 	
 if __name__=="__main__":
-	driver1 = startDemo()
-	gotoContact(driver1)
-	long_click(driver1,"myat2")
-		
+	driver1 = startDemo1()
+	sleep(8)
+	back_home(driver1)
+	el = driver1.find_element_by_xpath("//android.widget.TextView[@text='Settings']")
+	el.click()
 
 
 	

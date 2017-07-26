@@ -764,7 +764,7 @@ def test_exit_group(driver1, driver2, membername, groupname):
 	case_common.swipeUp(driver2)
 	driver2.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exit_grp").click() # 点击退出群组按钮
 	driver2.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exit").click() # 确认退出
-	sleep(3)
+	sleep(5)
 	
 	mygrouplist = get_grouplist(driver2)
 	if groupname not in mygrouplist:
@@ -815,9 +815,11 @@ def test_join_group(driver1, driver2, applyer, owner, groupname):
 		print "A received group join apply."
 		accept_groupapply(driver1,groupname)
 		print "A agreed apply."
+	else:
+		print "A not receive B join-apply"
 
 	try:
-		WebDriverWait(driver1,10).until(EC.visibility_of_element_located((By.XPATH,"//android.widget.TextView[@text='%s']"%groupname)))
+		WebDriverWait(driver2,10).until(EC.visibility_of_element_located((By.XPATH,"//android.widget.TextView[@text='%s']"%groupname)))
 		print "B received owner-agree notice succuess!"
 		print "B joined group success!"
 		print "< case end: pass>"
@@ -878,8 +880,9 @@ def check_groupapply(driver,groupname,username):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../../\
-	preceding-sibling::android.widget.RelativeLayout/*"%groupname)
+	# elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.TextView[0]"%groupname)
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.TextView[@index='0']"%groupname)
+	print "elems length:", len(elems)
 	for i in elems:
 		if i.get_attribute("text") == username:
 			ret_status = True
@@ -887,8 +890,9 @@ def check_groupapply(driver,groupname,username):
 	return ret_status
 
 def accept_groupapply(driver,groupname):
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../../\
-	preceding-sibling::android.widget.RelativeLayout/*"%groupname)
+	
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.RelativeLayout[@index='2']/*"%groupname)
+
 	for i in elems:
 		if i.get_attribute("text") == "Agree":
 			i.click()
@@ -998,10 +1002,10 @@ if __name__ == "__main__":
 	userA = accountA
 	userB = accountB
 	driver1 = case_common.startDemo1()
-	name = "GK1"
-	print name
-	WebDriverWait(driver1,60).until(EC.visibility_of_element_located((By.XPATH,"//android.widget.TextView[@text='%s']"%name)))
-	print "Found target."
+	case_common.gotoContact(driver1)
+	a = check_groupapply(driver1,'B_join','lst222')
+	if a:
+		accept_groupapply(driver1,'B_join')
 
 	
 	print "\nend test."
