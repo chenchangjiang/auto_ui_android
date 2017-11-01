@@ -4,6 +4,7 @@ import json
 import sys
 import requests
 import init
+import case_common
 
 from testdata import *
 
@@ -20,11 +21,14 @@ import case_account
 
 
 def get_grouplist(driver):
-	# list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index = '1']/android.widget.LinearLayout[@index = '0']/android.widget.TextView[@index = '0']")
 	grouplist = []
-	list1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")
-	for i in list1:
-		grouplist.append(i.get_attribute("text"))	
+	for i in range(2):
+		list1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")
+		for i in list1:
+			groupname = i.get_attribute("text")
+			if groupname not in grouplist:
+				grouplist.append(groupname)
+		case_common.swipeUp(driver)
 		
 	nongrouplist = ["Create new group","Add public group"]
 	
@@ -43,11 +47,6 @@ def goto_groupinfo(driver):
 	while mylist != []:
 		# sleep(1)
 		mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
-
-	# list1 = driver.find_elements_by_xpath("android.widget.ProgressBar")
-	# while list1 != []:
-	# 		list1 = driver.find_elements_by_xpath("android.widget.ProgressBar")
-
 
 def get_all_people(driver):
 	memberelements = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/tv_name") #找出所有的群成员元素
@@ -162,26 +161,22 @@ def button_join_group(driver):
 	return el
 	
 def close_AutoAcceptGroupInvitation(driver):
-	driver.find_elements_by_id("com.hyphenate.chatuidemo:id/iv_switch_open")[-1].click()
-
-def open_AutoAcceptGroupInvitation(driver):
-	driver.find_elements_by_id("com.hyphenate.chatuidemo:id/iv_switch_close")[-1].click()
+	text = "auto accept group invitation"
+	xpath_id = "com.hyphenate.chatuidemo:id/rl_switch_auto_accept_group_invitation"
+	elem = case_common.findelem_swipe(driver,xpath_id,text)
+	elem.click()
 
 #///////////////////////////////////////////////////////////
 
-
 def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberlist, isadmincase, ismemberinvite):
 	ret_status = True
-
 	print "< case start: add group member->agree >"
-	# memberlist = ['myat2']
-	# groupname = 'add_agree'
 
-	# testaccount = "myat1"
 	groupid = restHelper.get_groupid(testaccount,groupname)
 
 	case_common.gotoContact(driver1)
 	case_common.gotoGroup(driver1)
+	case_common.swipeDown(driver1)
 	find_group(driver1, groupname)
 	case_common.click_name(driver1, groupname)
 	sleep(1)
@@ -197,7 +192,6 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 		for i in memberlist:
 			if i not in namelist:
 				break
-
 	else:
 		print "B not receive group Invitation, cannot complete agree operation!"
 		ret_status = False
@@ -232,10 +226,6 @@ def test_add_groupmember_refuse(driver1, driver2, groupname, testaccount, member
 	ret_status = True
 	print "< case start: add group member->refuse >"
 
-	# memberlist = ['myat2']
-	# groupname = 'add_refuse'
-
-	# testaccount = "myat1"
 	groupid = restHelper.get_groupid(testaccount,groupname)
 
 	case_common.gotoContact(driver1)
@@ -282,9 +272,6 @@ def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isad
 	ret_status = True
 	print "< case start: del groupmember >"
 
-	# testaccount = "myat1"
-	# dellist = ["myat2"]
-	# groupname = "del_member"
 	groupid = restHelper.get_groupid(testaccount,groupname)
 
 	case_common.gotoContact(driver2)
@@ -527,9 +514,7 @@ def test_unmute_groupmember(driver1, driver2, groupname, testaccount, unmute_nam
 def test_add_admin(driver1, driver2, groupname, testaccount, adm_name):
 	ret_status = False
 	print "< case start: add group admin >"
-	# testaccount = "myat1"
-	# adm_name = "myat2"
-	# groupname = "GK1"
+
 	groupid = restHelper.get_groupid(testaccount,groupname)
 
 	case_common.gotoContact(driver1)
@@ -634,9 +619,7 @@ def test_rm_admin(driver1, driver2, groupname, testaccount, adm_name):
 def test_trans_owner(driver1, driver2, groupname, testaccount, adm_name):
 	ret_status = False
 	print "<case start: transfer owner >"
-	# testaccount = "myat1"
-	# adm_name = "myat2"
-	# groupname = "trans_owner"
+
 	groupid = restHelper.get_groupid(testaccount,groupname)
 
 	case_common.gotoContact(driver1)
@@ -706,12 +689,12 @@ def test_create_group(driver1, groupname, grouptype):
 	sleep(2)
 	driver1.find_element_by_xpath("//android.widget.Button[@text='Save']").click()
 
-	if case_common.find_name(driver1, groupname):
+	if find_group(driver1, groupname):
 		ret_status = True
 		print "group: %s created success!" %groupname
 		print "< case end: pass >"
 	else:
-		print "< case edn: fail >"
+		print "< case end: fail >"
 
 	case_common.back(driver1)
 	case_common.gotoConversation(driver1)
@@ -728,7 +711,11 @@ def test_dismiss_group(driver1, groupname, grouptype):
 	find_group(driver1, groupname)
 	case_common.click_name(driver1, groupname)	
 	goto_groupinfo(driver1)
-	driver1.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exitdel_grp").click() # 点击解散群组按钮
+
+	text = "dismiss group"
+	xpath_id = "com.hyphenate.chatuidemo:id/btn_exitdel_grp"
+	elem = case_common.findelem_swipe(driver1,xpath_id,text)
+	elem.click() # 点击解散群组按钮
 	driver1.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exit").click() # 确认解散群组
 	
 	sleep(3)
@@ -853,7 +840,7 @@ def check_groupinvite(driver,groupid):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../*"%groupid)
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
 	for i in elems:
 		if i.get_attribute("text") == "Refuse":
 			ret_status = True
@@ -861,7 +848,7 @@ def check_groupinvite(driver,groupid):
 	return ret_status
 	
 def accept_groupinvite(driver,groupid):
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../*"%groupid)
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
 	for i in elems:
 		if i.get_attribute("text") == "Agree":
   			i.click()
@@ -869,7 +856,7 @@ def accept_groupinvite(driver,groupid):
 			break
 
 def refuse_groupinvite(driver,groupid):	
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../*"%groupid)
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
 	for i in elems:
 		if i.get_attribute("text") == "Refuse":
   			i.click()
@@ -926,6 +913,8 @@ def find_toast2(driver,message):
 		print "not find toast message %s" %message
 
 def find_group(driver, groupname):
+	ret_status = False
+
 	grouplist = get_grouplist(driver)
 
 	lastgroup0 = grouplist[-1]
@@ -940,7 +929,9 @@ def find_group(driver, groupname):
 			break
 		else:
 			lastgroup0 =lastgroup1
+	ret_status = True
 	print "find group %s" %groupname
+	return ret_status
 
 
 
@@ -957,7 +948,6 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 
 	test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["add_agree"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 0)
 	print "------------------------------------------------------------------------------------------------------------------"
-	
 	test_add_groupmember_refuse(driver1, driver2, groupname = dic_Group["add_refuse"], testaccount = userA, memberlist = [userB], isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_del_groupmember(driver1, driver2, groupname = dic_Group["del_member"], testaccount = userA, dellist = [userB], isadmincase = isadmincase)
@@ -968,7 +958,8 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_mute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, mute_name = userB, isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"
-	test_unmute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, unmute_name = userB, isadmincase = isadmincase)		
+	test_unmute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, unmute_name = userB, isadmincase = isadmincase)
+	print "------------------------------------------------------------------------------------------------------------------"		
 	
 	if isadmincase == 0:
 		test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["member_invite"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 1)
@@ -994,7 +985,7 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 		test_exit_group(driver1, driver2, membername = userB, groupname = dic_Group["B_exit"])
 		print "------------------------------------------------------------------------------------------------------------------"
 		test_join_group(driver1, driver2, applyer = userB, owner = userA, groupname = dic_Group["B_join"])
-
+		print "------------------------------------------------------------------------------------------------------------------"
 
 
 if __name__ == "__main__":

@@ -4,18 +4,21 @@ from time import sleep
 from appium.webdriver.webelement import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 import get_device
+import os
 
 
+def device_info():
+	dinfo_dic = get_device.get_deviceinfo()
 
-dinfo_dic = get_device.get_deviceinfo()
+	deviceid1 = dinfo_dic.keys()[0]
+	dversion1 = dinfo_dic.get(deviceid1)
+	deviceid2 = dinfo_dic.keys()[1]
+	dversion2 = dinfo_dic.get(deviceid2)
 
-deviceid1 = dinfo_dic.keys()[0]
-dversion1 = dinfo_dic.values()[0]
-deviceid2 = dinfo_dic.keys()[1]
-dversion2 = dinfo_dic.values()[1]
-# assert deviceid != "No device detected! \nplease reconnect your devices!"
+	return [deviceid1,dversion1,deviceid2,dversion2]
+	# return [deviceid1,dversion1]
 
-def startDemo1():
+def startDemo1(deviceid1,dversion1):
 	desired_caps = {}
 	desired_caps['platformName'] = 'Android'
 	desired_caps['platformVersion'] = dversion1
@@ -23,17 +26,17 @@ def startDemo1():
 	desired_caps['udid'] = deviceid1
 	desired_caps['appPackage'] = 'com.hyphenate.chatuidemo'
 	desired_caps['appActivity'] = 'com.hyphenate.chatuidemo.ui.SplashActivity'
-	desired_caps['unicodeKeyboard']='true'
-	desired_caps['resetKeyboard']='true'
+	desired_caps['unicodeKeyboard']= True
+	desired_caps['resetKeyboard']= True
 	# desired_caps['automationName'] = 'Uiautomator2'
-	# desired_caps['noReset'] = 'true'
+	desired_caps['noReset'] = True
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
 	driver.implicitly_wait(5)
 	return driver
 	
-def startDemo2():
+def startDemo2(deviceid2,dversion2):
 	desired_caps = {}
 	desired_caps['platformName'] = 'Android'
 	desired_caps['platformVersion'] = dversion2
@@ -41,21 +44,27 @@ def startDemo2():
 	desired_caps['udid'] = deviceid2
 	desired_caps['appPackage'] = 'com.hyphenate.chatuidemo'
 	desired_caps['appActivity'] = 'com.hyphenate.chatuidemo.ui.SplashActivity'
-	desired_caps['unicodeKeyboard']='true'
-	desired_caps['resetKeyboard']='true'
-	# desired_caps['noReset'] = 'true'
+	desired_caps['unicodeKeyboard']= True
+	desired_caps['resetKeyboard']= True
+	desired_caps['noReset'] = True
 	desired_caps['newCommandTimeout']='2000'
 	global driver
-	driver = webdriver.Remote('http://localhost:4728/wd/hub', desired_caps)
-	driver.implicitly_wait(20)
+	driver = webdriver.Remote('http://localhost:4725/wd/hub', desired_caps)
+	driver.implicitly_wait(5)
 	return driver
+
+def clearAppdata(deviceid):
+	os.popen("adb -s %s shell pm clear com.hyphenate.chatuidemo" %deviceid).read()
 
 def gotoSetting(driver):
 	settingButton = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_setting")
 	settingButton.click()
 
 def gotoBlacklist(driver):
-	driver.find_element_by_xpath("//android.widget.TextView[@text='Black list']").click()
+	text = "Black list"
+	xpath_id = "com.hyphenate.chatuidemo:id/ll_black_list"
+	elem = findelem_swipe(driver,xpath_id,text)
+	elem.click()
 	
 def gotoContact(driver):
 	contactButton = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_address_list")
@@ -73,13 +82,12 @@ def isContactScreen(driver):
 
 	return ret_status
 
-	
 def gotoGroup(driver):
 	groupButton = driver.find_element_by_xpath("//android.widget.TextView[@text='Group chat']")
 	groupButton.click()
 
 def gotoInvitation(driver):
-	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
+	driver.find_element_by_xpath("//android.widget.TextView[@text='Invitation and notification']").click()
 	
 def click_name(driver,name):
 	driver.find_element_by_xpath("//android.widget.TextView[@text='%s']"%name).click()
@@ -94,9 +102,8 @@ def back2(driver):
 	driver.find_element_by_xpath("//android.widget.ImageView").click()
 
 def gotoChatroomlist(driver):
-	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Chat room']").click()
+	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Channel']").click()
 	
-
 def long_click(driver,name):
 	action1 = TouchAction(driver)
 	el = driver.find_element_by_xpath("//android.widget.TextView[@text='%s']"%name)
@@ -125,10 +132,10 @@ def search(driver,content):
 	el = driver.find_element_by_id("com.hyphenate.chatuidemo:id/search_bar_view")
 	el.send_keys(content)
 	
-def find_notice0(driver,fromname):
+def find_notice(driver,fromname):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
-	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%fromname)
+	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%fromname)
 	for i in list:
 		if i.get_attribute("text") == "Agree":
 			ret_status = True
@@ -136,7 +143,7 @@ def find_notice0(driver,fromname):
 	
 	return ret_status
 	
-def find_notice(driver,fromname):
+def find_notice2(driver,fromname):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	
@@ -233,14 +240,6 @@ def check_onContactInvited(driver,contact):
 			ret_status = True
 			
 	return ret_status
-
-def find_name(driver,content):
-	ret_status = False
-	mylist = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']"%content)
-	if mylist != []:
-		ret_status = True
-	
-	return ret_status	
 	
 def notice_isFullscreen(driver):
 	ret_status = False
@@ -264,15 +263,15 @@ def notice_isFullscreen(driver):
 	
 	return ret_status
 
-def swipeUp(driver):
-	width = driver.get_window_size()['width']
-	height = driver.get_window_size()['height']
-	driver.swipe(width/2, height*6/10, width/2, height*1/10, 1000)
-
-def swipeDown(driver):
-	width = driver.get_window_size()['width']
-	height = driver.get_window_size()['height']
-	driver.swipe(width/2, height*1/10, width/2, height*6/10, 1000)
+def swipeUp(driver,start_point=3/float(4),end_point=1/float(4)):
+	height = driver.get_window_size()["height"]
+	width = driver.get_window_size()["width"]
+	driver.swipe(width/2, height*start_point, width/2, height*end_point, 1000)
+	
+def swipeDown(driver,start_point=1/float(4),end_point=3/float(4)):
+	height = driver.get_window_size()["height"]
+	width = driver.get_window_size()["width"]
+	driver.swipe(width/2, height*start_point, width/2, height*end_point, 1000)
 
 def historymsg_on_screen(driver):
 	msglist = []
@@ -292,14 +291,41 @@ def name_is_inScreen(driver,name):
 		ret_status = True
 	return ret_status
 	
+def del_conversation(driver):
+	try:
+		while True:
+			elem = driver.find_element_by_id("com.hyphenate.chatuidemo:id/list_itease_layout")
+			action1 = TouchAction(driver)
+			action1.long_press(elem).wait(2000).perform()
+			driver.find_element_by_xpath("//android.widget.TextView[@text='Delete conversation and messages']").click()
+	except:
+		print 'No conversation to be deleted'
 
+def findelem_swipe(driver,xpath_id,text,find_type="by_id"):
+	ret_status = False
+
+	try_num = 1
+	while not ret_status:
+		try:
+			if find_type == "by_xpath":
+				elem = driver.find_element_by_xpath(xpath_id)
+			else:
+				elem = driver.find_element_by_id(xpath_id)
+			ret_status = True
+			print "find %s" %text
+			return elem
+		except:
+			if try_num == 5:
+				break
+			else:
+				swipeUp(driver,5/float(6),3/float(6))
+				print "not find %s" %text
+				try_num = try_num + 1
 	
 if __name__=="__main__":
 	driver1 = startDemo1()
-	sleep(8)
-	back_home(driver1)
-	el = driver1.find_element_by_xpath("//android.widget.TextView[@text='Settings']")
-	el.click()
+	sleep(3)
+	
 
 
 	

@@ -1,2 +1,2 @@
 #!/bin/bash
-appium -p 4728 -bp 4727 --session-override
+appium -p 4725 -bp 4726 --session-override

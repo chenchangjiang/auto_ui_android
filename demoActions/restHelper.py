@@ -9,7 +9,7 @@ import threading
 resturl='a1.easemob.com'
 org='easemob-demo'
 appkey='chatdemoui'
-token='YWMtyx5ZKl-9EeeUOX-hZEvslwAAAAAAAAAAAAAAAAAAAAGP-MBq3AgR45fkRZpPlqEwAQMAAAFdB0NeiwBPGgCpIHQ1S3RGEEjA4m9uavApAPqnD5VdMOXgZQcVztxuSQ'
+token='YWMtImJ7VKzAEeeBehvyqCjuuAAAAAAAAAAAAAAAAAAAAAGP-MBq3AgR45fkRZpPlqEwAQMAAAFe__NGEgBPGgB7ws_kUZrWmXNdQhY95AhP_3ODyzQDrf2zAyvAb7AaPA'
 
 # resturl='118.193.28.212:31080'
 # org='easemob-demo'
@@ -31,7 +31,7 @@ def set_admin(groupid,membername):
 	except urllib2.HTTPError,e:
 		print 'error code', e.code
 		print 'error msg',e.read()
-#注销账号
+
 def get_joinroominfo():
 	myurl = "http://%s/%s/%s/chatrooms?pagenum=1&pagesize=20" %(resturl,org,appkey)
 
@@ -171,17 +171,6 @@ def add_group_blacklist(groupID,name):
 		print '\terror msg',e.read()
 #群黑名单加人
 
-# data = {"usernames":["at0","b0"]}
-# request=urllib2.Request(addmember_url,headers=myheaders,data=json.dumps(data))
-# request.get_method=lambda:'POST'
-# try:
-	# response=urllib2.urlopen(request)
-	# response.close()
-# except urllib2.HTTPError,e:
-	# print 'error code', e.code
-	# print 'error msg',e.read()
-#群组加人
-
 def add_group_member(GroupID,name):
 	addmember_url2='http://%s/%s/%s/chatgroups/%s/users/%s' %(resturl,org,appkey,GroupID,name)
 	request=urllib2.Request(addmember_url2,headers=myheaders)
@@ -247,7 +236,7 @@ def sendmsg(fromname='myRest',toname='at1',number=5,msgtype='users'):
 
 	for i in range(number):
 		msgcontent = "testmsg"+str(i)
-		print msgcontent+"\n"
+		print msgcontent
 		mydata = { "target_type":msgtype,"target":[toname],"msg":{"type":"txt","msg":msgcontent},"from":fromname}
 		request=urllib2.Request(url=myurl,headers=myheaders,data=json.dumps(mydata))
 		request.get_method=lambda:'POST'
@@ -273,7 +262,7 @@ def send10chatroommsg(roomid):
 			print 'error code', e.code
 			print 'error msg',e.read()
 		print "send txt msg: %s" %i
-		sleep(1)
+		time.sleep(0.5)
 		
 def ifpublicgroup(groupid):
 	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,appkey,groupid)
@@ -513,23 +502,6 @@ def sendmsg_multi_senders():
 		t.start()
 		
 	t.join()
-
-def send10chatroommsg(roomid):
-	myurl = "https://%s/%s/%s/messages" %(resturl,org,appkey)
-	myheaders = myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
-	
-	for i in range(10):
-		data = { "target_type":"chatrooms","target":[roomid],"msg":{"type":"txt","msg":str(i) },"from":"test2"}
-		request=urllib2.Request(url=myurl,headers=myheaders,data=json.dumps(data))
-		request.get_method=lambda:'POST'
-		try:
-			response=urllib2.urlopen(request)
-			response.close()
-		except urllib2.HTTPError,e:
-			print 'error code', e.code
-			print 'error msg',e.read()
-		print "send txt msg: %s" %i
-		time.sleep(0.3)
 
 
 if __name__ == "__main__":

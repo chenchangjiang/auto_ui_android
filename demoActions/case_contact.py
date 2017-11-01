@@ -29,9 +29,6 @@ def add_friend(driver,name):
 	sleep(2)
 	add = driver.find_element_by_id("com.hyphenate.chatuidemo:id/indicator")
 	add.click()
-	# driver.get_screenshot_as_file(r"D:\images\addcontact.png")
-	# if comp_img(r"D:\images\addcontact.png",myMD5.addfriendsent) == 'same':
-		# print "contact invitation sent successlly!"
 	ret_status = True
 	
 	return ret_status
@@ -44,7 +41,7 @@ def get_friendList(driver):
 	for i in list1:
 		friendList.append(i.get_attribute("text"))	
 		
-	nonContactlist = ["Invitation and notification","Group chat","Chat room","Robot chat"]
+	nonContactlist = ["Invitation and notification","Group chat","Channel","Robot chat"]
 	
 	for i in nonContactlist:
 		friendList.remove(i)
@@ -250,23 +247,32 @@ def test_unblock_friend(driver,friendname):
 #///////////////////////////////////////////////////////////
 def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC):
 	print "********************************************---Friends---********************************************"
-	fromname = accountA
-	addname = accountC
-	delname = accountC
-	blockname = accountB
-	unblockname = accountB
+	fromname = userA
+	addname = userC
+	delname = userC
+	blockname = userB
+	unblockname = userB
 	
 	case_account.switch_user(driver2, replacename = addname)
+	case_common.del_conversation(driver2)
 	test_add_friend(driver1, driver2, fromname, addname)
+	print "------------------------------------------------------------------------------------------------------------------"
 	test_del_friend(driver1, driver2, fromname, delname)
+	print "------------------------------------------------------------------------------------------------------------------"
 
 	case_account.switch_user(driver2, replacename = blockname)
 	test_block_friend(driver1, blockname)
+	print "------------------------------------------------------------------------------------------------------------------"
 	test_unblock_friend(driver1, unblockname)
+	print "------------------------------------------------------------------------------------------------------------------"
 	case_account.switch_user(driver2, replacename = accountB)
 	
 if __name__ == "__main__":
-	driver1 = case_common.startDemo1()
-	driver2 = case_common.startDemo2()
+	device_list = case_common.device_info()
 
-	test_add_friend(driver1, driver2, "lst1111", 'lst3333')
+	driver1 = case_common.startDemo1(device_list[0],device_list[1])
+	driver2 = case_common.startDemo2(device_list[2],device_list[3])
+	case_account.test_login(driver1,"bob011","1")
+	case_account.test_login(driver2,"bob022","1")
+
+	testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)

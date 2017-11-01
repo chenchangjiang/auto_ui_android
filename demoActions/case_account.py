@@ -23,7 +23,7 @@ def unread_msg_count(driver):
 # Register new user
 def switch_user(driver, replacename ):
 	gotoSetting(driver)
-	test_logoff(driver)
+	test_logout(driver)
 	test_login(driver, replacename, password = "1")
 
 
@@ -36,22 +36,22 @@ def test_create_new_user(driver, username, password):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/password").send_keys(password)
 	pwd2 = driver.find_element_by_id("com.hyphenate.chatuidemo:id/confirm_password").send_keys("%s"%password)
 	driver.find_element_by_xpath("//android.widget.Button[@text='Register']").click()
-	time.sleep(3)
-	listA = driver.find_elements_by_xpath("//android.widget.Button[@text='Login']")
-	if listA == []:
-		print "< case end: fail! >"
+	
+	for i in range(2):
+		try:
+			driver.find_element_by_xpath("//android.widget.Button[@text='Login']")
+			print "< case end: pass! >"
+			ret_status = True
+			break
+		except:	
+			pass
+	if ret_status == False:
+		print "< case end: fail >"
 		driver.press_keycode(4)
-		return ret_status
-	else:
-		print "< case end: pass! >"
-		ret_status = True
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
 
 	return ret_status
-
-
-
 
 # Login
 def test_login(driver, username, password):
@@ -81,10 +81,9 @@ def test_login(driver, username, password):
 
 	return ret_status
 
-
-# Logoff
-def test_logoff(driver):
-	print"< Case start: logoff >"
+# Logout
+def test_logout(driver):
+	print"< Case start: logout >"
 	ret_status = False
 
 	swipeUp(driver)
@@ -143,9 +142,12 @@ def testset_account(driver):
 	test_offline_msg(driver, fromname = "rest", toname = registername, togroupid = groupid, msgnum = 5)
 	print "------------------------------------------------------------------------------------------------------------------"
 	gotoSetting(driver)
-	test_logoff(driver)
+	test_logout(driver)
+
+	restHelper.del_user(registername)
 	print "------------------------------------------------------------------------------------------------------------------"
 
 if __name__ == "__main__":
 	driver = startDemo1()
-	test_login(driver,"k1","1")
+
+	test_login(driver,"on","asd")

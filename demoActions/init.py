@@ -56,9 +56,9 @@ def admin():
 	for groupid in groupidlist:
 		set_admin(groupid,accountC)
 
-# 拉accountB进群，并设置accountB在群组中的角色：
+# 拉accountB进群，并设置accountB在群组中的角色
 def group_Broles():
-	groupid = get_groupid(accountA,dic_Group["group0"], )
+	groupid = get_groupid(accountA,dic_Group["group0"])
 	add_group_member(groupid, accountB)
 
 	groupid = get_groupid(accountA, dic_Group["del_member"])
@@ -78,8 +78,9 @@ def group_Broles():
 	add_group_member(groupid, accountB)
 	set_admin(groupid, accountB)
 
+
 def group_Broles2():
-	groupid = get_groupid(accountA,dic_Group["group0"], )
+	groupid = get_groupid(accountA,dic_Group["group0"])
 	del_group_member(groupid, accountB)
 	add_group_member(groupid, accountB)
 
