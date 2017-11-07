@@ -6,7 +6,6 @@ from appium.webdriver.common.touch_action import TouchAction
 import get_device
 import os
 
-
 def device_info():
 	dinfo_dic = get_device.get_deviceinfo()
 
@@ -321,6 +320,43 @@ def findelem_swipe(driver,xpath_id,text,find_type="by_id"):
 				swipeUp(driver,5/float(6),3/float(6))
 				print "not find %s" %text
 				try_num = try_num + 1
+
+def find_customsetting(driver):
+	elem_id1 = "com.hyphenate.chatuidemo:id/switch_custom_appkey"
+	text1 = "appkey setting."
+	elem_id2 = "com.hyphenate.chatuidemo:id/switch_custom_server"
+	text2 = "server setting."
+	elem1 = findelem_swipe(driver,elem_id1,text1)
+	elem2 = findelem_swipe(driver,elem_id2,text2)
+	return [elem1, elem2]
+
+def	change_appkeyandserver(driver,appkey,rest_server,im_server):
+	gotoSetting(driver)
+	elems = find_customsetting(driver)
+	elems[0].click()
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/edit_custom_appkey").send_keys(appkey)
+	elems[1].click()
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/rl_custom_server").click()
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_rest").send_keys(rest_server)
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_im").send_keys(im_server)
+	back(driver)
+	logout(driver)
+
+def logout(driver):
+	find_status = False
+	xpath_id = "com.hyphenate.chatuidemo:id/btn_logout"
+	text = "logout button."
+	elem = findelem_swipe(driver,xpath_id,text)
+	elem.click()
+	for i in range(15):
+		if i<14:
+			if driver.find_element_by_xpath("//android.widget.Button[@text='Login']"):
+				print "Logout success!"
+				break
+			else:
+				sleep(1)
+		else:
+			raise Exception("Logout failed!")
 	
 if __name__=="__main__":
 	driver1 = startDemo1()

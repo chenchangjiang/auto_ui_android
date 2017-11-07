@@ -255,6 +255,7 @@ def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC =
 	
 	case_account.switch_user(driver2, replacename = addname)
 	case_common.del_conversation(driver2)
+	print "------------------------------------------------------------------------------------------------------------------"
 	test_add_friend(driver1, driver2, fromname, addname)
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_del_friend(driver1, driver2, fromname, delname)

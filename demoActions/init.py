@@ -41,8 +41,6 @@ def groups():
 
 	create_group(dic_Group["member_invite"], False, accountC, [accountA], True)
 
-
-
 # 设置accountC为所有测试群的群管理员
 def admin():
 	print "----------------------------------------------------------------------------------"

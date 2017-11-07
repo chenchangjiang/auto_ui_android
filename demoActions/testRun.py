@@ -18,36 +18,43 @@ if __name__ == "__main__":
 		t1 = time.time()
 
 		device_list = device_info()
-		case_common.clearAppdata(device_list[0])
-		case_common.clearAppdata(device_list[2])
+		
+		# case_common.clearAppdata(device_list[0])
+		# case_common.clearAppdata(device_list[2])
+		# driver1 = startDemo1(device_list[0],device_list[1])
+		# driver2 = startDemo2(device_list[2],device_list[3])
+		# test_login(driver1, username = "on", password = "asd")
+		# case_common.change_appkeyandserver(driver1,appkey,resturl,imserver)
+		# test_login(driver2, username = "on", password = "asd")
+		# case_common.change_appkeyandserver(driver2,appkey,resturl,imserver)
 
-		init.init_all()
+		# init.init_all()
 
 		driver1 = startDemo1(device_list[0],device_list[1])
 		driver2 = startDemo2(device_list[2],device_list[3])
 
-		testset_account(driver1)
+		# testset_account(driver1)
 
-		test_login(driver1, username = accountA, password = "1")
-		test_login(driver2, username = accountB, password = "1")
-		case_common.del_conversation(driver1)
-		case_common.del_conversation(driver2)
+		# test_login(driver1, username = accountA, password = "1")
+		# test_login(driver2, username = accountB, password = "1")
+		# case_common.del_conversation(driver1)
+		# case_common.del_conversation(driver2)
 
-		testset_single_chat(driver1,driver2, fromname = accountA, toname = accountB)
-		testset_group_chat(driver1,driver2, fromname = accountA, groupname = dic_Group["group0"])
+		# testset_single_chat(driver1,driver2, fromname = accountA, toname = accountB)
+		# testset_group_chat(driver1,driver2, fromname = accountA, groupname = dic_Group["group0"])
 
-		testset_call(driver1, driver2, userA = accountA, userB = accountB)
+		# testset_call(driver1, driver2, userA = accountA, userB = accountB)
 
-		testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
+		# testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
 		
-		testset_chatroom(driver1, accountA)
+		# testset_chatroom(driver1, accountA)
 
-		case_common.gotoSetting(driver2)
-		case_group.close_AutoAcceptGroupInvitation(driver2)
-		sleep(2)
-		case_common.gotoConversation(driver2)
+		# case_common.gotoSetting(driver2)
+		# case_group.close_AutoAcceptGroupInvitation(driver2)
+		# sleep(2)
+		# case_common.gotoConversation(driver2)
 
-		testset_group(driver1, driver2, dic_Group, isadmincase = 0)
+		# testset_group(driver1, driver2, dic_Group, isadmincase = 0)
 		init.group_Broles2()
 		case_account.switch_user(driver1,accountC)
 		case_common.del_conversation(driver1)

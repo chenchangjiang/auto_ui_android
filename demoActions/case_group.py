@@ -564,7 +564,7 @@ def test_add_admin(driver1, driver2, groupname, testaccount, adm_name):
 
 def test_rm_admin(driver1, driver2, groupname, testaccount, adm_name):
 	ret_status = False
-	print "< case start: rm admin >"
+	print "< case start: remove admin >"
 	# testaccount = "myat1"
 	# adm_name = "myat2"
 	# groupname = "GK1"
