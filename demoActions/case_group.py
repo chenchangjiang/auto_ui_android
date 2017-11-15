@@ -5,7 +5,6 @@ import sys
 import requests
 import init
 import case_common
-
 from testdata import *
 
 from appium import webdriver
@@ -42,10 +41,8 @@ def get_grouplist(driver):
 
 def goto_groupinfo(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/right_layout").click()
-	# sleep(2)
 	mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
 	while mylist != []:
-		# sleep(1)
 		mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
 
 def get_all_people(driver):
@@ -956,17 +953,17 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_unblock_groupmember(driver1, groupname = dic_Group["unblock_member"], unblock_name = userB, isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"
-	test_mute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, mute_name = userB, isadmincase = isadmincase)
+	test_mute_groupmember(driver1, driver2, groupname = dic_Group["main_group"], testaccount = userA, mute_name = userB, isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"
-	test_unmute_groupmember(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, unmute_name = userB, isadmincase = isadmincase)
+	test_unmute_groupmember(driver1, driver2, groupname = dic_Group["main_group"], testaccount = userA, unmute_name = userB, isadmincase = isadmincase)
 	print "------------------------------------------------------------------------------------------------------------------"		
 	
 	if isadmincase == 0:
 		test_add_groupmember_agree(driver1, driver2, groupname = dic_Group["member_invite"], testaccount = userA , memberlist = [userB], isadmincase = isadmincase, ismemberinvite = 1)
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_add_admin(driver1, driver2, groupname = dic_Group["group0"], testaccount =userA, adm_name = userB)
+		test_add_admin(driver1, driver2, groupname = dic_Group["main_group"], testaccount =userA, adm_name = userB)
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_rm_admin(driver1, driver2, groupname = dic_Group["group0"], testaccount = userA, adm_name = userB)
+		test_rm_admin(driver1, driver2, groupname = dic_Group["main_group"], testaccount = userA, adm_name = userB)
 		print "------------------------------------------------------------------------------------------------------------------"
 		test_trans_owner(driver1, driver2, groupname = dic_Group["trans_owner"], testaccount = userA, adm_name = userB)
 		print "------------------------------------------------------------------------------------------------------------------"

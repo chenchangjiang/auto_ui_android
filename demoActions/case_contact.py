@@ -3,7 +3,6 @@ from appium import webdriver
 from time import sleep
 from appium.webdriver.webelement import WebElement
 from appium.webdriver.common.touch_action import TouchAction
-# import getdevice
 import sys
 import os
 import hashlib
@@ -13,6 +12,8 @@ import requests
 from datetime import datetime
 import case_common
 import case_account
+import case_chat
+import restHelper
 from testdata import *
 
 def add_friend(driver,name):
@@ -97,7 +98,7 @@ def unblock_friend(driver,name):
 	
 	blacklist = get_friendBlacklist(driver)
 	if name not in blacklist:
-		print "%s not in blacklist so cannot unblock this contact!"
+		print "%s not in blacklist so cannot unblock this contact!" %name
 		return
 	
 	case_common.long_click(driver,name)
@@ -242,8 +243,91 @@ def test_unblock_friend(driver,friendname):
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
+
+def test_msg_block(driver1,driver2,fromname,blockname):
+	ret_status = False
+	print "< case start: check msg after blocking friend >"
+
+	case_common.gotoContact(driver2)
+	case_common.click_name(driver2,fromname)
+	case_chat.clear_msg(driver2)
+	msgcontent = "test msg"
+	msgtype = "text"
+
+	if not case_chat.send_msg_txt(driver2,msgcontent):
+		ret_status = True
+		print "< case end: pass>"
+	else:
+		print "< case end: fail>"
+
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	return ret_status
+
+def test_msg_unblock(driver1,driver2,fromname,blockname):
+	ret_status = False
+	print "< case start: check msg after unblocking friend >"	
+
+	case_common.del_conversation(driver1)
+	case_chat.clear_msg(driver2)
+	msgcontent = "test msg"
+	msgtype = "text"
+	chattype = "single_chat"
+
+	if case_chat.send_msg_txt(driver2,msgcontent):
+		if case_chat.test_rcv_msg(driver1,blockname,msgcontent,msgtype,chattype):
+			ret_status = True
+			print "< case end: pass>"
+		else:
+			print "< case end: fail>"
+	else:
+		print "< case end: fail>"
+
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	return ret_status
 	
-	
+def test_msg_restblock(driver1,driver2,fromname,blockname):
+	ret_status = False
+	print "< case start: check msg after after rest block friend >"
+
+	restHelper.add_friend_blacklist(fromname,blockname)
+	case_chat.clear_msg(driver2)
+	msgcontent = "test msg"
+	msgtype = "text"
+
+	if not case_chat.send_msg_txt(driver2,msgcontent):
+		ret_status = True
+		print "< case end: pass>"
+	else:
+		print "< case end: fail>"
+
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	return ret_status
+
+def test_msg_restunblock(driver1,driver2,fromname,blockname):
+	ret_status = False
+	print "< case start: check msg after after rest unblock friend >"
+
+	case_common.del_conversation(driver1)
+	case_chat.clear_msg(driver2)
+	msgcontent = "test msg"
+	msgtype = "text"
+	chattype = "single_chat"
+
+	if case_chat.send_msg_txt(driver2,msgcontent):
+		if case_chat.test_rcv_msg(driver1,blockname,msgcontent,msgtype,chattype):
+			ret_status = True
+			print "< case end: pass>"
+		else:
+			print "< case end: fail>"
+	else:
+		print "< case end: fail>"
+
+	case_common.back(driver2)
+	case_common.gotoConversation(driver2)
+
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	return ret_status
+
 #///////////////////////////////////////////////////////////
 def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC):
 	print "********************************************---Friends---********************************************"
@@ -260,20 +344,25 @@ def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC =
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_del_friend(driver1, driver2, fromname, delname)
 	print "------------------------------------------------------------------------------------------------------------------"
-
 	case_account.switch_user(driver2, replacename = blockname)
 	test_block_friend(driver1, blockname)
 	print "------------------------------------------------------------------------------------------------------------------"
+	test_msg_block(driver1, driver2, fromname, blockname)
+	print "------------------------------------------------------------------------------------------------------------------"
 	test_unblock_friend(driver1, unblockname)
 	print "------------------------------------------------------------------------------------------------------------------"
-	case_account.switch_user(driver2, replacename = accountB)
+	test_msg_unblock(driver1, driver2, fromname, blockname)
+	print "------------------------------------------------------------------------------------------------------------------"
+	test_msg_restblock(driver1, driver2, fromname, blockname)
+	print "------------------------------------------------------------------------------------------------------------------"
+	test_msg_restunblock(driver1, driver2, fromname, blockname)
 	
 if __name__ == "__main__":
 	device_list = case_common.device_info()
 
 	driver1 = case_common.startDemo1(device_list[0],device_list[1])
 	driver2 = case_common.startDemo2(device_list[2],device_list[3])
-	case_account.test_login(driver1,"bob011","1")
-	case_account.test_login(driver2,"bob022","1")
+	# case_account.test_login(driver1,"bob011","1")
+	# case_account.test_login(driver2,"bob022","1")
 
 	testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)

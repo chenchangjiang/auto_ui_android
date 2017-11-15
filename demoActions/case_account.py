@@ -91,7 +91,11 @@ def test_logout(driver):
 	swipeUp(driver)
 	logout = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_logout")
 	logout.click()
-	time.sleep(3)
+
+	mylist = driver.find_elements_by_id("android:id/progress")
+	while mylist != []:
+		mylist = driver.find_elements_by_id("android:id/progress")
+
 	listA = driver.find_elements_by_xpath("//android.widget.Button[@text='Login']")
 	if listA == []:
 		print "case end: fail"
@@ -114,7 +118,8 @@ def random_str(strlenth):
 
 def test_offline_msg(driver,fromname,toname,togroupid,msgnum):
 	ret_status = False
-	print "< case start: receive offline msg >"
+	
+	print "< case start: receive offline rest msg >"
 	restHelper.sendmsg(fromname,toname,msgnum,msgtype='users')
 	restHelper.sendmsg(fromname,togroupid,msgnum,msgtype='chatgroups')
 	test_login(driver,toname,"1")
@@ -128,11 +133,33 @@ def test_offline_msg(driver,fromname,toname,togroupid,msgnum):
 		print "< case end: fail >"
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
-	ret_status = True
+	
+	return ret_status
+
+def test_online_msg(driver,fromname,toname,togroupid,msgnum):
+	ret_status = False
+
+	print "< case start: receive online rest msg >"
+	del_conversation(driver)
+	restHelper.sendmsg(fromname,toname,msgnum,msgtype='users')
+	restHelper.sendmsg(fromname,togroupid,msgnum,msgtype='chatgroups')
+
+	mylist = unread_msg_count(driver)
+	print mylist
+	if mylist == ['5','5','10']:
+		print "< case end: pass > "
+		ret_status = True
+	else:
+		print "< case end: fail >"
+
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	
+	return ret_status
 
 def testset_account(driver):
 	print "********************************************---Accounts---********************************************"
 	registername = random_str(8)
+	# registername = "my_autotest"
 
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_create_new_user(driver,registername,"1")
@@ -141,6 +168,8 @@ def testset_account(driver):
 	groupid = restHelper.get_groupid(registername, "offline_msg_Group")
 	test_offline_msg(driver, fromname = "rest", toname = registername, togroupid = groupid, msgnum = 5)
 	print "------------------------------------------------------------------------------------------------------------------"
+	test_online_msg(driver, fromname = "rest", toname = registername, togroupid = groupid, msgnum = 5)
+	print "------------------------------------------------------------------------------------------------------------------"
 	gotoSetting(driver)
 	test_logout(driver)
 
@@ -148,6 +177,10 @@ def testset_account(driver):
 	print "------------------------------------------------------------------------------------------------------------------"
 
 if __name__ == "__main__":
-	driver = startDemo1()
+	device_list = device_info()
 
-	test_login(driver,"on","asd")
+	driver1 = startDemo1(device_list[0],device_list[1])
+	driver2 = startDemo2(device_list[2],device_list[3])
+
+	testset_account(driver1)
+

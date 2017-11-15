@@ -57,39 +57,22 @@ def get_joinroominfo():
 		return room_info
 
 def get_roomid(roomname):
-	myurl= "http://%s/%s/%s/chatrooms" % (resturl,org,app)
-	
-	try:
+	i=1
+	chatroomlist = []
+	count = 1 #if count = 0, it means reach the last page. So use un-0 value to initialize count.
+	while count != 0:
+		myurl = 'http://%s/%s/%s/chatrooms?pagenum=%d&pagesize=1000' %(resturl,org,app,i)
 		resp = requests.get(url=myurl,headers=myheaders)
-		resp.raise_for_status()
-	except requests.RequestException as e:
-		print e
-	else:
-		resp_dic = resp.json()
-		chatroomlist = resp_dic['data']
-		for i in range(len(chatroomlist)):
-			if chatroomlist[i]['name'] == roomname:
-				chatroomid = chatroomlist[i]['id']
-				print "chatroom id of %s is: %s" %(roomname,chatroomid)
-				return chatroomid
-			
-def get_roomname(roomid):
-	myurl="http://%s/%s/%s/chatrooms" % (resturl,org,app)
-	
-	try:
-		resp = requests.get(url=myurl,headers=myheaders)
-		resp.raise_for_status()
-	except requests.RequestException as e:
-		print e
-	else:
-		res_dic = resp.json()
-		chatroomlist = res_dic['data']
-
-		for i in range(len(chatroomlist)):
-			if chatroomlist[i]['id'] == roomid:
-				chatroomname = chatroomlist[i]['name']
-				print "chatroom name of %s is: %s" %(roomid,chatroomname)
-				return chatroomname
+		diction = resp.json()
+		count = diction.get('count')
+		chatroom_data = diction.get('data')
+		i = i + 1
+		if count != 0:
+			for n in range(count):
+				if chatroom_data[n]['name'] == roomname:
+					chatroomid = chatroom_data[n]['id']
+					chatroomlist.append(chatroomid)
+	return chatroomlist
 			
 def get_roommember(roomid):
 	myurl= "http://%s/%s/%s/chatrooms/%s" % (resturl,org,app,roomid)
@@ -422,4 +405,32 @@ def create_group(groupname,mybool1,owner,memberlist,mybool2=False):
 		print "\trest created group: ",groupname
 	except requests.RequestException as e:
 		print e
+		print resp.text
 
+def chatroom_superadmin(username):
+	myurl = "http://%s/%s/%s/chatrooms/super_admin" %(resturl,org,app)
+	mydata = {"superadmin":username}
+	try:
+		resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(mydata))
+		resp.raise_for_status()
+	except requests.RequestException as e:
+		print e
+		print resp.text
+
+def del_chatroom_vianame(roomname):
+	chatroomlist = get_roomid(roomname)
+
+	if len(chatroomlist) == 0:
+		print "no chatroom named %s need delete." %roomname
+	else:
+		for roomid in chatroomlist:
+			try:
+				myurl = "http://%s/%s/%s/chatrooms/%s" %(resturl,org,app,roomid)
+				resp = requests.delete(url=myurl,headers=myheaders)
+				resp.raise_for_status()
+			except requests.RequestException as e:
+				print e
+				print resp.text
+
+if __name__ == "__main__":
+	del_chatroom_vianame("my_autotest_chatroom")

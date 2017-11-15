@@ -25,11 +25,6 @@ def friends():
 	add_friend(accountA,accountB)
 	add_friend(accountC,accountB)
 
-# 测试用好友黑名单
-# print "----------------------------------------------------------------------------------"
-# print "Generate Friend-blacklist:"
-# add_friend_blacklist("myat1","myb1")
-
 # 创建测试用群并同时拉accountC进群组
 def groups():
 	print "----------------------------------------------------------------------------------"
@@ -78,7 +73,7 @@ def group_Broles():
 
 
 def group_Broles2():
-	groupid = get_groupid(accountA,dic_Group["group0"])
+	groupid = get_groupid(accountA,dic_Group["main_group"])
 	del_group_member(groupid, accountB)
 	add_group_member(groupid, accountB)
 

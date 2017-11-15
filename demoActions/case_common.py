@@ -53,7 +53,16 @@ def startDemo2(deviceid2,dversion2):
 	return driver
 
 def clearAppdata(deviceid):
-	os.popen("adb -s %s shell pm clear com.hyphenate.chatuidemo" %deviceid).read()
+	os.popen("adb -s %s shell pm clear com.hyphenate.chatuidemo" %deviceid).readlines()
+
+def setnonappiumimput(deviceid):
+	ime_list = []
+	resp = os.popen("adb -s %s shell ime list -s" %deviceid).readlines()
+	for i in range(len(resp)):
+		ime = resp[i].strip()
+		if ime != "io.appium.android.ime/.UnicodeIME" and "Permission" not in ime:
+			ime_list.append(ime)
+	resp = os.popen("adb -s %s shell ime set %s" %(deviceid,ime_list[-1]))
 
 def gotoSetting(driver):
 	settingButton = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_setting")
@@ -265,12 +274,12 @@ def notice_isFullscreen(driver):
 def swipeUp(driver,start_point=3/float(4),end_point=1/float(4)):
 	height = driver.get_window_size()["height"]
 	width = driver.get_window_size()["width"]
-	driver.swipe(width/2, height*start_point, width/2, height*end_point, 1000)
+	driver.swipe(width/2,height*start_point,width/2,height*end_point,1000)
 	
 def swipeDown(driver,start_point=1/float(4),end_point=3/float(4)):
 	height = driver.get_window_size()["height"]
 	width = driver.get_window_size()["width"]
-	driver.swipe(width/2, height*start_point, width/2, height*end_point, 1000)
+	driver.swipe(width/2,height*start_point,width/2,height*end_point,1000)
 
 def historymsg_on_screen(driver):
 	msglist = []
@@ -295,7 +304,7 @@ def del_conversation(driver):
 		while True:
 			elem = driver.find_element_by_id("com.hyphenate.chatuidemo:id/list_itease_layout")
 			action1 = TouchAction(driver)
-			action1.long_press(elem).wait(2000).perform()
+			action1.long_press(elem).wait(1000).perform()
 			driver.find_element_by_xpath("//android.widget.TextView[@text='Delete conversation and messages']").click()
 	except:
 		print 'No conversation to be deleted'
@@ -328,28 +337,29 @@ def find_customsetting(driver):
 	text2 = "server setting."
 	elem1 = findelem_swipe(driver,elem_id1,text1)
 	elem2 = findelem_swipe(driver,elem_id2,text2)
-	return [elem1, elem2]
 
 def	change_appkeyandserver(driver,appkey,rest_server,im_server):
 	gotoSetting(driver)
 	elems = find_customsetting(driver)
-	elems[0].click()
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/switch_custom_appkey").click()
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/edit_custom_appkey").send_keys(appkey)
-	elems[1].click()
+	driver.find_element_by_id("com.hyphenate.chatuidemo:id/switch_custom_server").click()
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/rl_custom_server").click()
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_rest").send_keys(rest_server)
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_im").send_keys(im_server)
 	back(driver)
+	print "change appkey and server successfully."
+	sleep(1) #swipeUp in logout will fail if without this sleep
 	logout(driver)
 
 def logout(driver):
-	find_status = False
+	swipeUp(driver)
 	xpath_id = "com.hyphenate.chatuidemo:id/btn_logout"
 	text = "logout button."
 	elem = findelem_swipe(driver,xpath_id,text)
 	elem.click()
-	for i in range(15):
-		if i<14:
+	for i in range(20):
+		if i<19:
 			if driver.find_element_by_xpath("//android.widget.Button[@text='Login']"):
 				print "Logout success!"
 				break
@@ -359,9 +369,20 @@ def logout(driver):
 			raise Exception("Logout failed!")
 	
 if __name__=="__main__":
-	driver1 = startDemo1()
-	sleep(3)
-	
+	# device_list = device_info()
+
+	# clearAppdata(device_list[0])
+
+	# driver1 = startDemo1(device_list[0],device_list[1])
+	# driver2 = startDemo2(device_list[2],device_list[3])
+	# case_account.test_login(driver1,"bob011","1")
+	# # case_account.test_login(driver2,"bob022","1")
+	# # gotoSetting(driver1)
+	# # logout(driver1)
+
+	# change_appkeyandserver(driver1,"easemob-demo#coco","a1.easemob.com","msync-im1.easemob.com")
+
+	setnonappiumimput("e0f5ba55")
 
 
 	

@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
 		# testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
 		
-		# testset_chatroom(driver1, accountA)
+		# testset_chatroom(driver1, driver2, accountA, accountB)
 
 		# case_common.gotoSetting(driver2)
 		# case_group.close_AutoAcceptGroupInvitation(driver2)
@@ -59,6 +59,9 @@ if __name__ == "__main__":
 		case_account.switch_user(driver1,accountC)
 		case_common.del_conversation(driver1)
 		testset_group(driver1, driver2, dic_Group, isadmincase = 1)
+
+		setnonappiumimput(device_list[0])
+		setnonappiumimput(device_list[2])
 	
 	except Exception, e:
 		print traceback.print_exc()

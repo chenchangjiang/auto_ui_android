@@ -12,7 +12,7 @@ accountB = dic_Name["accountB"]
 accountC = dic_Name["accountC"]
 
 dic_Group = {}
-dic_Group["group0"] = 'GK1'
+dic_Group["main_group"] = 'GK1'
 dic_Group["add_agree"] = "add_agree"
 dic_Group["add_refuse"] = "add_refuse"
 dic_Group["del_member"] = "del_member"

@@ -25,7 +25,7 @@ def get_richmedia_msg_buttons(driver):
 	return mydic
 
 def record_audio(driver,duration):
-	case_common.long_press_by_id(driver,"com.hyphenate.chatuidemo:id/btn_press_to_speak",5000)
+	case_common.long_press_by_id(driver,"com.hyphenate.chatuidemo:id/btn_press_to_speak",3000)
 
 def send_msg_txt(driver,content):
 	ret_status = False
@@ -248,20 +248,23 @@ def send_msg_audio(driver,duration):
 	# record audio
 	list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
 	sleep(1)
-	e1 = list1[0].get_attribute("resourceId")
-	print "element0 is: %s" %e1
-	while list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/progress_bar':
-		sleep(1)
-		list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
-	if list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_length':
-		print "Audio message sent success!"
-		ret_status = True
-	elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_ack':
-		print "Audio message sent success and got Read ACK!"
-		ret_status = True
-	elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/msg_status':
-		print "Audio Messaage sent failed! please retry!"
-		
+	try:
+		e1 = list1[0].get_attribute("resourceId")
+		print "element0 is: %s" %e1
+		while list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/progress_bar':
+			sleep(1)
+			list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
+		if list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_length':
+			print "Audio message sent success!"
+			ret_status = True
+		elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_ack':
+			print "Audio message sent success and got Read ACK!"
+			ret_status = True
+		elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/msg_status':
+			print "Audio Messaage sent failed! please retry!"
+	except:
+		print "audio not send at all."	
+	
 	return ret_status
 
 def send_chatroomMsg_txt(driver,msgcontent):
@@ -283,16 +286,11 @@ def send_chatroomMsg_txt(driver,msgcontent):
 	if mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/bubble':
 		print "txt message sent sucess!"
 		ret_status = True
-		# driver.find_element_by_id("com.hyphenate.chatuidemo:id/left_image").click()
-		# driver.find_element_by_xpath("//android.widget.ImageView[@index = '0']").click()
 	elif mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_delivered':
 		print " message delivered sucess!"
-		case_common.back(driver)
 		ret_status = True
 	elif mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/msg_status':
 		print "txt message sent failed!"
-		# driver.find_element_by_id("com.hyphenate.chatuidemo:id/left_image").click()
-		# driver.find_element_by_xpath("//android.widget.ImageView[@index = '0']").click()
 		return
 	# 发送文本消息结束
 	return ret_status
@@ -301,7 +299,7 @@ def send_chatroomMsg_audio(driver):
 	ret_status = False
 	#加入聊天室成功后开始发送录音消息
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_set_mode_voice").click()
-	record_audio(driver,5000)
+	record_audio(driver,3000)
 	
 	msglist = driver.find_elements_by_xpath("//android.widget.ListView[@index = '0']/*")
 	myindex = str(len(msglist)-1)
@@ -316,9 +314,8 @@ def send_chatroomMsg_audio(driver):
 	if list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_length':
 		print "Audio message sent success!"
 		ret_status = True
-	elif mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_delivered':
+	elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_delivered':
 		print " message delivered sucess!"
-		case_common.back(driver)
 		ret_status = True
 	elif list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_ack':
 		print "Audio message sent success and got Read ACK!"
@@ -634,15 +631,15 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 
 	clear_msg(driver1)
 	
-	test_send_msg_txt(driver1,chattype,msgcontent)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_read_msg(driver2,fromname,msgtype)
-	print "------------------------------------------------------------------------------------------------------------------"
-	clear_msg(driver2)
-	case_common.back(driver2)
-	test_rcv_readAck(driver1,msgtype)
+	if test_send_msg_txt(driver1,chattype,msgcontent):
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_read_msg(driver2,fromname,msgtype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		clear_msg(driver2)
+		case_common.back(driver2)
+		test_rcv_readAck(driver1,msgtype)
 	
 	print "------------------------------------------------------------------------------------------------------------------"
 	msgcontent = u"[语音]"
@@ -653,15 +650,15 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	case_common.back(driver1)
 	sleep(2)
 	case_common.click_name(driver1,toname)
-	test_send_msg_audio(driver1,chattype)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_read_msg(driver2,fromname,msgtype)
-	print "------------------------------------------------------------------------------------------------------------------"
-	case_common.back(driver2)
-	test_rcv_readAck(driver1,msgtype)
-	print "------------------------------------------------------------------------------------------------------------------"
+	if test_send_msg_audio(driver1,chattype):
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_read_msg(driver2,fromname,msgtype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		case_common.back(driver2)
+		test_rcv_readAck(driver1,msgtype)
+		print "------------------------------------------------------------------------------------------------------------------"
 
 
 	# print "----------------------------------------------------------------------------------------------"
@@ -716,18 +713,18 @@ def testset_group_chat(driver1, driver2, fromname, groupname):
 	msgcontent = "group test msg"
 	msgtype = "text"
 	clear_groupmsg(driver1)
-	test_send_msg_txt(driver1,chattype,msgcontent)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
+	if test_send_msg_txt(driver1,chattype,msgcontent):
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
 	
 	print "------------------------------------------------------------------------------------------------------------------"
 	msgcontent = u"[语音]"
 	msgtype = "audio"
 
 	clear_groupmsg(driver1)
-	test_send_msg_audio(driver1,chattype,msgcontent)
-	print "------------------------------------------------------------------------------------------------------------------"
-	test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)	
+	if test_send_msg_audio(driver1,chattype,msgcontent):
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)	
 	
 	# print "-------------------------------------------------------------------------------------------------"
 	# msgcontent = "[%s location]" %fromname
