@@ -22,8 +22,8 @@ def new_users():
 def friends():
 	print "----------------------------------------------------------------------------------"
 	print "Generate Friendship For Testing Accounts:"
-	add_friend(accountA,accountB)
-	add_friend(accountC,accountB)
+	add_friend(accountA, accountB)
+	add_friend(accountC, accountB)
 
 # 创建测试用群并同时拉accountC进群组
 def groups():
@@ -32,7 +32,7 @@ def groups():
 	memberlist1 = [accountC]
 	for groupname in dic_Group.values(): 
 		if groupname != dic_Group["member_invite"]:
-			create_group(groupname,True,accountA,memberlist1)
+			create_group(groupname, True, accountA, memberlist1)
 
 	create_group(dic_Group["member_invite"], False, accountC, [accountA], True)
 
@@ -47,11 +47,11 @@ def admin():
 		groupidlist.append(groupid)
 
 	for groupid in groupidlist:
-		set_admin(groupid,accountC)
+		set_admin(groupid, accountC)
 
 # 拉accountB进群，并设置accountB在群组中的角色
 def group_Broles():
-	groupid = get_groupid(accountA,dic_Group["group0"])
+	groupid = get_groupid(accountA,dic_Group["main_group"])
 	add_group_member(groupid, accountB)
 
 	groupid = get_groupid(accountA, dic_Group["del_member"])
@@ -73,7 +73,7 @@ def group_Broles():
 
 
 def group_Broles2():
-	groupid = get_groupid(accountA,dic_Group["main_group"])
+	groupid = get_groupid(accountA, dic_Group["main_group"])
 	del_group_member(groupid, accountB)
 	add_group_member(groupid, accountB)
 

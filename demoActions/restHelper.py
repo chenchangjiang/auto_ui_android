@@ -7,17 +7,17 @@ import requests
 import threading
 import configdata
 
-test_env = "vip6"
+test_env = "ebs"
 appkey = "easemob-demo#coco"
-test_type = "full"
+test_type = "gray"
 test_im = "msync"
 get_token = "yes"
 
-server = configdata.server_config(test_env,test_type,test_im)
+server = configdata.server_config(test_env, test_type, test_im)
 resturl = server[0]
 imserver = server[1]
 
-test_para = configdata.test_parameter(test_env,appkey,get_token,resturl)
+test_para = configdata.test_parameter(test_env, appkey, get_token, resturl)
 org = test_para[0]
 app = test_para[1]
 token = test_para[2]
@@ -30,22 +30,22 @@ print "imserver: ", imserver
 
 myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
 
-def set_admin(groupid,membername):
-	myurl = "http://%s/%s/%s/chatgroups/%s/admin" %(resturl,org,app,groupid)
-	mydata = {"newadmin":membername}
+def set_admin(groupid, membername):
+	myurl = "http://%s/%s/%s/chatgroups/%s/admin" %(resturl, org, app, groupid)
+	mydata = {"newadmin": membername}
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(mydata))
+		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(mydata))
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print "\t",e
 		print "\t",resp.text
 
 def get_joinroominfo():
-	myurl = "http://%s/%s/%s/chatrooms?pagenum=1&pagesize=20" %(resturl,org,app)
+	myurl = "http://%s/%s/%s/chatrooms?pagenum=1&pagesize=20" %(resturl, org, app)
 
 	try:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -53,7 +53,7 @@ def get_joinroominfo():
 		result = resp.json().get("data")
 		roomid = result[0].get("id")
 		roomname = result[0].get("name")
-		room_info = [roomid,roomname]
+		room_info = [roomid, roomname]
 		return room_info
 
 def get_roomid(roomname):
@@ -61,8 +61,8 @@ def get_roomid(roomname):
 	chatroomlist = []
 	count = 1 #if count = 0, it means reach the last page. So use un-0 value to initialize count.
 	while count != 0:
-		myurl = 'http://%s/%s/%s/chatrooms?pagenum=%d&pagesize=1000' %(resturl,org,app,i)
-		resp = requests.get(url=myurl,headers=myheaders)
+		myurl = 'http://%s/%s/%s/chatrooms?pagenum=%d&pagesize=1000' %(resturl, org, app, i)
+		resp = requests.get(url=myurl, headers=myheaders)
 		diction = resp.json()
 		count = diction.get('count')
 		chatroom_data = diction.get('data')
@@ -75,10 +75,10 @@ def get_roomid(roomname):
 	return chatroomlist
 			
 def get_roommember(roomid):
-	myurl= "http://%s/%s/%s/chatrooms/%s" % (resturl,org,app,roomid)
+	myurl= "http://%s/%s/%s/chatrooms/%s" % (resturl, org,app, roomid)
 
 	try:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -95,103 +95,104 @@ def get_roommember(roomid):
 		return memberlist
 	
 def del_account(name):
-	myurl='http://%s/%s/%s/users/%s' %(resturl,org,app,name)
+	myurl='http://%s/%s/%s/users/%s' %(resturl, org, app, name)
 
 	try:
-		resp = requests.deleted(url=myurl,headers=myheaders)
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 	
-def add_friend(name1,name2):
-	myurl='http://%s/%s/%s/users/%s/contacts/users/%s' %(resturl,org,app,name1,name2)
+def add_friend(name1, name2):
+	myurl='http://%s/%s/%s/users/%s/contacts/users/%s' %(resturl, org, app, name1, name2)
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders)
+		resp = requests.post(url=myurl, headers=myheaders)
 		resp.raise_for_status()
-		print "\tadd %s as %s's friend" %(name2,name1)
+		print "\tadd %s as %s's friend" %(name2, name1)
 	except requests.RequestException as e:
 		print e
 
-def del_friend(name1,name2):
-	myurl='http://%s/%s/%s/users/%s/contacts/users/%s' %(resturl,org,app,name1,name2)
+def del_friend(name1, name2):
+	myurl='http://%s/%s/%s/users/%s/contacts/users/%s' %(resturl, org, app, name1, name2)
 
 	try:
-		resp = requests.deleted(url=myurl,headers=myheaders)
-		resp.raise_for_status()
-	except requests.RequestException as e:
-		print e
-
-def del_friend_blacklist(name1,name2):
-	myurl='http://%s/%s/%s/users/%s/blocks/users/%s' %(resturl,org,app,name1,name2)
-
-	try:
-		resp = requests.deleted(url=myurl,headers=myheaders)
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 
-def add_friend_blacklist(name1,name2):
-	myurl='http://%s/%s/%s/users/%s/blocks/users/%s' %(resturl,org,app,name1,name2)
+def del_friend_blacklist(name1, name2):
+	myurl='http://%s/%s/%s/users/%s/blocks/users/%s' %(resturl, org, app, name1, name2)
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders)
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
-		print "\trest added %s to %s friend-blacklist" %(name2,name1)
+		print "\trest delete %s from %s friend-blacklist" %(name2, name1)
 	except requests.RequestException as e:
 		print e
 
-def del_group_blacklist(groupID,name):
-	myurl='http://%s/%s/%s/chatgroups/%s/blocks/users/%s' %(resturl,org,app,groupID,name)
+def add_friend_blacklist(name1, name2):
+	myurl='http://%s/%s/%s/users/%s/blocks/users/%s' %(resturl, org, app, name1, name2)
 
 	try:
-		resp = requests.delete(url=myurl,headers=myheaders)
+		resp = requests.post(url=myurl, headers=myheaders)
+		resp.raise_for_status()
+		print "\trest added %s to %s friend-blacklist" %(name2, name1)
+	except requests.RequestException as e:
+		print e
+
+def del_group_blacklist(groupID, name):
+	myurl='http://%s/%s/%s/chatgroups/%s/blocks/users/%s' %(resturl, org, app, groupID, name)
+
+	try:
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 
 def add_group_blacklist(groupID,name):
-	myurl='http://%s/%s/%s/chatgroups/%s/blocks/users/%s' %(resturl,org,app,groupID,name)
+	myurl='http://%s/%s/%s/chatgroups/%s/blocks/users/%s' %(resturl, org, app, groupID, name)
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders)
+		resp = requests.post(url=myurl, headers=myheaders)
 		resp.raise_for_status()
-		print "\tadd %s to group-blacklist groupid: %s" %(name,groupID)
+		print "\tadd %s to group-blacklist groupid: %s" %(name, groupID)
 	except requests.RequestException as e:
 		print e
 
-def add_group_member(GroupID,name):
-	myurl='http://%s/%s/%s/chatgroups/%s/users/%s' %(resturl,org,app,GroupID,name)
+def add_group_member(GroupID, name):
+	myurl='http://%s/%s/%s/chatgroups/%s/users/%s' %(resturl, org, app, GroupID, name)
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders)
+		resp = requests.post(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 
-def del_group_member(GroupID,name):
-	myurl='http://%s/%s/%s/chatgroups/%s/users/%s' %(resturl,org,app,GroupID,name)
+def del_group_member(GroupID, name):
+	myurl='http://%s/%s/%s/chatgroups/%s/users/%s' %(resturl, org, app, GroupID, name)
 
 	try:
-		resp = requests.delete(url=myurl,headers=myheaders)
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 
 def del_group(groupID):
-	myurl='http://%s/%s/%s/chatgroups/%s' %(resturl,org,app,groupID)
+	myurl='http://%s/%s/%s/chatgroups/%s' %(resturl, org, app, groupID)
 
 	try:
-		resp = request.delete(url=myurl,headers=myheaders)
+		resp = request.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 
 def search_account(name):
-	myurl = "http://%s/%s/%s/users/%s" %(resturl,org,app,name)
+	myurl = "http://%s/%s/%s/users/%s" %(resturl, org, app, name)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -201,15 +202,15 @@ def search_account(name):
 		myresult = res_dic['error']
 		return myresult
 		
-def sendmsg(fromname='myRest',toname='at1',number=5,msgtype='users'):
+def sendmsg(toname, fromname='myrest', number=5, msgtype='users'):
 	myurl = "http://%s/%s/%s/messages" %(resturl,org,app)
 
 	for i in range(number):
 		msgcontent = "testmsg"+str(i)
 		print msgcontent
-		mydata = { "target_type":msgtype,"target":[toname],"msg":{"type":"txt","msg":msgcontent},"from":fromname}
+		mydata = { "target_type":msgtype, "target":[toname], "msg":{"type":"txt", "msg":msgcontent}, "from":fromname}
 		try:
-			resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(mydata))
+			resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(mydata))
 			resp.raise_for_status()
 		except requests.RequestException as e:
 			print e
@@ -217,12 +218,12 @@ def sendmsg(fromname='myRest',toname='at1',number=5,msgtype='users'):
 		time.sleep(0.8)
 
 def send10chatroommsg(roomid):
-	myurl = "http://%s/%s/%s/messages" %(resturl,org,app)
+	myurl = "http://%s/%s/%s/messages" %(resturl, org, app)
 	
 	for i in range(10):
-		data = { "target_type":"chatrooms","target":[roomid],"msg":{"type":"txt","msg":str(i) },"from":"test2"}
+		data = { "target_type":"chatrooms", "target":[roomid], "msg":{"type":"txt","msg":str(i) }, "from":"test2"}
 		try:
-			resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(data))
+			resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(data))
 			resp.raise_for_status()
 			print "send txt msg: %s" %i
 		except requests.RequestException as e:
@@ -230,10 +231,10 @@ def send10chatroommsg(roomid):
 		time.sleep(0.8)
 		
 def ifpublicgroup(groupid):
-	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,app,groupid)
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl, org, app, groupid)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -243,10 +244,10 @@ def ifpublicgroup(groupid):
 		return ifpublic
 	
 def if_memberinvit(groupid):
-	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,app,groupid)
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl, org, app, groupid)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -255,30 +256,30 @@ def if_memberinvit(groupid):
 		ifallowinvite = res_dic['data'][0]['allowinvites']
 		return ifallowinvite
 	
-def get_groupid(username,groupname):
-	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl,org,app,username)
+def get_groupid(username, groupname):
+	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl, org, app, username)
 
 	try:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
 	else:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 		resp_dic = resp.json()
 		grouplist = resp_dic['data']
 
 		for i in range(len(grouplist)):
 			if grouplist[i]['groupname'] == groupname:
 				groupid = grouplist[i]['groupid']
-				print "\tgroupid of %s is: %s" %(groupname,groupid)
+				print "\tgroupid of %s is: %s" %(groupname, groupid)
 				return groupid
 			
-def get_groupname(username,groupid):
-	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl,org,app,username)
+def get_groupname(username, groupid):
+	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl, org, app, username)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -290,14 +291,14 @@ def get_groupname(username,groupid):
 		for i in range(len(grouplist)):
 			if grouplist[i]['groupid'] == groupid:
 				groupname = grouplist[i]['groupname']
-				print "groupid with %s name: %s" %(groupid,groupname)
+				print "groupid with %s name: %s" %(groupid, groupname)
 				return groupname
 
 def get_grouplist(username):
-	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl,org,app,username)
+	myurl = "http://%s/%s/%s/users/%s/joined_chatgroups" %(resturl, org, app, username)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -313,10 +314,10 @@ def get_grouplist(username):
 		return mylist
 
 def get_memberlist(groupid):
-	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,app,groupid)
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl, org, app, groupid)
 
 	try:
-		resp = request.get(url=myurl,headers=myheaders)
+		resp = request.get(url=myurl, headers=myheaders)
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -333,10 +334,10 @@ def get_memberlist(groupid):
 		return myset
 	
 def get_friendList(name):
-	myurl = "http://%s/%s/%s/users/%s/contacts/users" %(resturl,org,app,name)
+	myurl = "http://%s/%s/%s/users/%s/contacts/users" %(resturl, org, app, name)
 
 	try:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 	except requests.RequestException as e:
 		print e
 	else:
@@ -345,10 +346,10 @@ def get_friendList(name):
 		return friendlist
 
 def get_groupname_with_id(groupid):
-	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl,org,app,groupid)
+	myurl = "http://%s/%s/%s/chatgroups/%s" %(resturl, org, app, groupid)
 	
 	try:
-		resp = requests.get(url=myurl,headers=myheaders)
+		resp = requests.get(url=myurl, headers=myheaders)
 		resp_dic = resp.json()
 		infolist = resp_dic['data'][0]
 		
@@ -359,29 +360,29 @@ def get_groupname_with_id(groupid):
 		return None
 	
 def register_single_user(name):
-	myurl = "http://%s/%s/%s/users" %(resturl,org,app)
-	data = {"username":name,"password":"1"}
-	print "\tdata:",data
+	myurl = "http://%s/%s/%s/users" %(resturl, org, app)
+	data = {"username":name, "password":"1"}
+	print "\tdata:", data
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(data))
+		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(data))
 		resp.raise_for_status()
 		print "\trest registered new users:",name
 	except requests.RequestException as e:
-		print "\t",e
+		print "\t", e
 
 def del_user(name):
-	myurl = "http://%s/%s/%s/users/%s" %(resturl,org,app,name)
+	myurl = "http://%s/%s/%s/users/%s" %(resturl, org, app, name)
 
 	try:
-		resp = requests.delete(url=myurl,headers=myheaders)
+		resp = requests.delete(url=myurl, headers=myheaders)
 		resp.raise_for_status()
-		print "\trest deleted user: ",name
+		print "\trest delete user: ",name
 	except requests.RequestException as e:
-		print "\t",e
-		print "\t",resp.text
+		print "\t", e
+		print "\t", resp.text
 
-def create_group(groupname,mybool1,owner,memberlist,mybool2=False):
+def create_group(groupname, mybool1, owner, memberlist, mybool2=False):
 	myurl = "http://%s/%s/%s/chatgroups" %(resturl,org,app)
 
 	data = {
@@ -400,7 +401,7 @@ def create_group(groupname,mybool1,owner,memberlist,mybool2=False):
 			}
 
 	try:
-		resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(data))
+		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(data))
 		resp.raise_for_status()
 		print "\trest created group: ",groupname
 	except requests.RequestException as e:
@@ -408,10 +409,10 @@ def create_group(groupname,mybool1,owner,memberlist,mybool2=False):
 		print resp.text
 
 def chatroom_superadmin(username):
-	myurl = "http://%s/%s/%s/chatrooms/super_admin" %(resturl,org,app)
+	myurl = "http://%s/%s/%s/chatrooms/super_admin" %(resturl, org, app)
 	mydata = {"superadmin":username}
 	try:
-		resp = requests.post(url=myurl,headers=myheaders,data=json.dumps(mydata))
+		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(mydata))
 		resp.raise_for_status()
 	except requests.RequestException as e:
 		print e
@@ -425,7 +426,7 @@ def del_chatroom_vianame(roomname):
 	else:
 		for roomid in chatroomlist:
 			try:
-				myurl = "http://%s/%s/%s/chatrooms/%s" %(resturl,org,app,roomid)
+				myurl = "http://%s/%s/%s/chatrooms/%s" %(resturl, org, app, roomid)
 				resp = requests.delete(url=myurl,headers=myheaders)
 				resp.raise_for_status()
 			except requests.RequestException as e:

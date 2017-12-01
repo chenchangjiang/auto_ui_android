@@ -13,7 +13,7 @@ from appium.webdriver.common.touch_action import TouchAction
 from testdata import *
 from time import sleep
 
-def create_chatroom(driver,roomname):
+def create_chatroom(driver, roomname):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text='Create new Chat Room']").click()
@@ -24,7 +24,7 @@ def create_chatroom(driver,roomname):
 	
 	return ret_status
 
-def create_chatroom_success(driver,roomname):
+def create_chatroom_success(driver, roomname):
 	ret_status = False
 
 	try:
@@ -72,8 +72,13 @@ def get_chatroomlist(driver):
 
 	return ret_status
 
-def join_chatroom(driver,roomname):
-	driver.find_element_by_xpath("//android.widget.TextView[@text='%s']" %roomname).click()
+def join_chatroom(driver, roomname):
+	xpath_id = "//android.widget.TextView[@text='%s']" %roomname
+	find_type = "by_xpath"
+	text = "chatroom named %s" %roomname
+	case_common.findelem_swipe(driver, xpath_id, text, find_type)
+	driver.find_element_by_xpath(xpath_id).click()
+
 	mylist = driver.find_elements_by_id("android:id/progress")
 	while mylist != []:
 		mylist = driver.find_elements_by_id("android:id/progress")
@@ -93,7 +98,7 @@ def join_sucess(roomid,testaccount):
 def leave_chatroom(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/left_layout").click()
 
-def leave_sucess(testaccount,roomid):
+def leave_sucess(testaccount, roomid):
 	ret_status = False
 
 	time.sleep(3)
@@ -186,12 +191,12 @@ def test_get_chatroomlist(driver):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_join_chatroom(driver,testaccount,roomname,roomid):
+def test_join_chatroom(driver, testaccount, roomname, roomid):
 	ret_status = False
 	
 	print "< case start: join_chatroom >"
-	join_chatroom(driver,roomname)
-	if join_sucess(roomid,testaccount):
+	join_chatroom(driver, roomname)
+	if join_sucess(roomid, testaccount):
 		ret_status = True
 		print "< case end: pass. >"
 	else:
@@ -213,7 +218,7 @@ def test_get_10_historymsg(driver):
 	return ret_status
 
 # Leave a chatroom
-def test_leave_chatroom(driver,testaccount,roomname,roomid): 
+def test_leave_chatroom(driver, testaccount, roomname, roomid): 
 	ret_status = False
 
 	print "< case start: leave_chatroom >"
@@ -227,13 +232,13 @@ def test_leave_chatroom(driver,testaccount,roomname,roomid):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_create_chatroom(driver,roomname):
+def test_create_chatroom(driver, roomname):
 	ret_status = False
 
 	print "< case start: create chatroom >"
 	case_common.gotoContact(driver)
 	case_common.gotoChatroomlist(driver)
-	if create_chatroom(driver,roomname):
+	if create_chatroom(driver, roomname):
 		ret_status = True
 		print "< case end: pass. >"
 	else:
@@ -242,7 +247,7 @@ def test_create_chatroom(driver,roomname):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_dismiss_chatroom(driver,roomname):
+def test_dismiss_chatroom(driver, roomname):
 	ret_status = False
 
 	print "< case start: dismiss chatroom>"
@@ -264,19 +269,17 @@ def test_dismiss_chatroom(driver,roomname):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def chatroom_details(driver,roomname):
+def chatroom_details(driver, roomname):
 	driver.find_element_by_id('com.hyphenate.chatuidemo:id/right_image').click()
 	mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
 	while mylist != []:
 		mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/progressBar")
 
-def chatroom_member_manage(driver,roomname,member):
-	el = case_group.find_memberElement(driver,member)
-	el.click()
+def chatroom_member_manage(driver, roomname, member):
+	case_group.find_memberElement(driver, member).click()
 
-def chatroom_admin_manage(driver,roomname,adm_name):
-	el = case_group.find_adminElement(driver,adm_name)
-	el.click()
+def chatroom_admin_manage(driver, roomname, adm_name):
+	case_group.find_adminElement(driver, adm_name).click()
 
 def join_a_chatroom(driver,roomname):
 	case_common.gotoContact(driver)
@@ -285,9 +288,8 @@ def join_a_chatroom(driver,roomname):
 	xpath_id = "//android.widget.TextView[@text='%s']" %roomname
 	find_type = "by_xpath"
 	text = "chatroom named %s" %roomname
-	elem = case_common.findelem_swipe(driver,xpath_id,text,find_type)
-	elem.click()
-	
+	case_common.findelem_swipe(driver, xpath_id, text, find_type)
+	driver.find_element_by_xpath(xpath_id).click()
 	mylist = driver.find_elements_by_id("android:id/progress")
 	while mylist != []:
 		mylist = driver.find_elements_by_id("android:id/progress")
@@ -309,7 +311,7 @@ def test_add_admin_chatroom(driver1, driver2, roomname, adm_name):
 	chatroom_details(driver1,roomname)
 	chatroom_member_manage(driver1,roomname,adm_name)
 	case_group.add_admin(driver1)
-	sleep(5)
+	sleep(3)
 
 	mydic = case_group.get_group_roles(driver1)
 	if adm_name in mydic["adminlist"]:
@@ -320,9 +322,7 @@ def test_add_admin_chatroom(driver1, driver2, roomname, adm_name):
 		print "%s not receive +admin notice, fail!" %(adm_name)
 		print "< case end: fail >"
 
-	str1 = 'chatroom'
-
-	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Remove Member from Admin
@@ -333,7 +333,7 @@ def test_rm_admin_chatroom(driver1, driver2, roomname, adm_name):
 
 	chatroom_admin_manage(driver1,roomname,adm_name)
 	case_group.rm_admin(driver1)
-	sleep(5)
+	sleep(3)
 
 	mydic = case_group.get_group_roles(driver1)
 	if adm_name not in mydic["adminlist"]:
@@ -348,23 +348,21 @@ def test_rm_admin_chatroom(driver1, driver2, roomname, adm_name):
 	leave_a_chatroom(driver1)
 	leave_a_chatroom(driver2)
 
-	str1 = 'chatroom'
-
-	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Mute a Chatroom Member
-def test_mute_chatroommember(driver1,driver2,roomname,mute_name):
+def test_mute_chatroommember(driver1, driver2, roomname, mute_name):
 	ret_status = False
 
 	print "< case start: mute a chatroom member>"
-	join_a_chatroom(driver2,roomname)
-	join_a_chatroom(driver1,roomname)
+	join_a_chatroom(driver2, roomname)
+	join_a_chatroom(driver1, roomname)
 
-	chatroom_details(driver1,roomname)
-	chatroom_member_manage(driver1,roomname,mute_name)
+	chatroom_details(driver1, roomname)
+	chatroom_member_manage(driver1, roomname, mute_name)
 	case_group.mute(driver1)
-	sleep(5)
+	sleep(3)
 
 	if not case_chat.send_chatroomMsg_txt(driver2,"test msg!"):
 		print "mute %s sucessful!" %(mute_name)
@@ -373,20 +371,18 @@ def test_mute_chatroommember(driver1,driver2,roomname,mute_name):
 	else:
 		print "< case end: fail >"
 
-	str1 = 'chatroom'
-
-	case_status[sys._getframe().f_code.co_name+':'+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Unmute a Chatroom Member
-def test_unmute_chatroommember(driver1,driver2,roomname,unmute_name):
+def test_unmute_chatroommember(driver1, driver2, roomname, unmute_name):
 	ret_status = False
 
 	print "< case start: unmute a chatroom member>"
 
-	chatroom_member_manage(driver1,roomname,unmute_name)
+	chatroom_member_manage(driver1, roomname, unmute_name)
 	case_group.unmute(driver1)
-	sleep(5)
+	sleep(3)
 
 	if case_chat.send_chatroomMsg_txt(driver2,"test msg!"):
 		print "unmute %s sucessful!" %(unmute_name)
@@ -399,73 +395,69 @@ def test_unmute_chatroommember(driver1,driver2,roomname,unmute_name):
 	leave_a_chatroom(driver1)
 	leave_a_chatroom(driver2)
 
-	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Kick Member out of Chatroom
-def test_remove_chatroommember(driver1,driver2,roomname,member):
+def test_remove_chatroommember(driver1, driver2, roomname, member):
 	ret_status = False
 
 	print "< case start: remove a chatroom member>"
-	join_a_chatroom(driver2,roomname)
-	join_a_chatroom(driver1,roomname)
+	join_a_chatroom(driver2, roomname)
+	join_a_chatroom(driver1, roomname)
 
 	chatroom_details(driver1,roomname)
-	chatroom_member_manage(driver1,roomname,member)
+	chatroom_member_manage(driver1, roomname, member)
 	case_group.del_member(driver1)
-	sleep(5)
+	sleep(3)
 
-	if chatroom_list_view(driver2,):
+	if chatroom_list_view(driver2):
 		print "kick %s out of chatroom sucess!" %(member)
 		ret_status = True
 		print "< case end: pass >"
 	else:
 		print "< case end: fail >"
-		case_common.back(driver)
+		case_common.back(driver2)
 
-	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Blcok Chatroom Member
-def test_block_chatroommember(driver1,driver2,roomname,member):
+def test_block_chatroommember(driver1, driver2, roomname, member):
 	ret_status = False
-
 	print "< case start: block a chatroom member>"
 
-	join_chatroom(driver2,roomname)
-
-	chatroom_member_manage(driver1,roomname,member)
+	join_chatroom(driver2, roomname)
+	sleep(3)
+	chatroom_member_manage(driver1, roomname, member)
 	case_group.add_group_blacklist(driver1)
-	sleep(5)
+	sleep(3)
 
-	join_chatroom(driver2,roomname)
+	join_chatroom(driver2, roomname)
 
-	if not chatroom_view(driver2,roomname):
+	if not chatroom_view(driver2, roomname):
 		print "Block %s sucess!" %(member)
 		ret_status = True
 		print "< case end: pass >"
 	else:
 		print "< case end: fail >"
 
-	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 # Unblock Chatroom Member
-def test_unblock_chatroommember(driver1,driver2,roomname,member):
+def test_unblock_chatroommember(driver1, driver2, roomname, member):
 	ret_status = False
 
 	print "< case start: unblock a chatroom member>"
 
-	chatroom_member_manage(driver1,roomname,member)
+	chatroom_member_manage(driver1, roomname, member)
 	case_group.rm_group_blacklist(driver1)
-	sleep(5)
+	sleep(3)
 
-	join_chatroom(driver2,roomname)
+	join_chatroom(driver2, roomname)
 
-	if chatroom_view(driver2,roomname):
+	if chatroom_view(driver2, roomname):
 		print "Unblock %s sucess!" %(member)
 		ret_status = True
 		print "< case end: pass >"
@@ -476,8 +468,7 @@ def test_unblock_chatroommember(driver1,driver2,roomname,member):
 	leave_a_chatroom(driver1)
 	leave_a_chatroom(driver2)
 
-	str1 = "chatroom"
-	case_status[sys._getframe().f_code.co_name+":"+str1] = ret_status
+	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
 def testset_chatroom(driver1, driver2, accountA, accountB):
@@ -492,14 +483,14 @@ def testset_chatroom(driver1, driver2, accountA, accountB):
 		roomname = roominfo[1]
 		print "------------------------------------------------------------------------------------------------------------------"
 		restHelper.send10chatroommsg(roomid)
-		if test_join_chatroom(driver1,accountA,roomname,roomid):
+		if test_join_chatroom(driver1, accountA, roomname, roomid):
 			test_get_10_historymsg(driver1)
 			print "------------------------------------------------------------------------------------------------------------------"
-			case_chat.test_send_chatroomMsg_txt(driver1, msgcontent = "chatroom autotest msg")
+			case_chat.test_send_chatroomMsg_txt(driver1, msgcontent="chatroom autotest msg")
 			print "------------------------------------------------------------------------------------------------------------------"
 			case_chat.test_send_chatroomMsg_audio(driver1)
 			print "------------------------------------------------------------------------------------------------------------------"
-			test_leave_chatroom(driver1,accountA,roomname,roomid)
+			test_leave_chatroom(driver1, accountA, roomname, roomid)
 			print "------------------------------------------------------------------------------------------------------------------"
 			case_common.back(driver1)
 			case_common.gotoConversation(driver1)
@@ -526,10 +517,10 @@ def testset_chatroom(driver1, driver2, accountA, accountB):
 if __name__ == "__main__":
 	device_list = case_common.device_info()
 
-	driver1 = case_common.startDemo1(device_list[0],device_list[1])
-	driver2 = case_common.startDemo2(device_list[2],device_list[3])
-	# case_account.test_login(driver1,"bob011","1")
-	# case_account.test_login(driver2,"bob022","1")
+	driver1 = case_common.startDemo(device_list[0], device_list[1], "4723")
+	driver2 = case_common.startDemo(device_list[2], device_list[3], "4725")
+	# case_account.test_login(driver1, "bob011", "1")
+	# case_account.test_login(driver2, "bob022", "1")
 
 	testset_chatroom(driver1, driver2, accountA, accountB)
 

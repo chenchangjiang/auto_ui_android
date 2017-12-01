@@ -3,6 +3,7 @@
 import requests
 import sys
 import json
+import random
 from appium import webdriver
 from appium.webdriver.common.touch_action import TouchAction
 import case_account
@@ -25,7 +26,7 @@ def get_richmedia_msg_buttons(driver):
 	return mydic
 
 def record_audio(driver,duration):
-	case_common.long_press_by_id(driver,"com.hyphenate.chatuidemo:id/btn_press_to_speak",3000)
+	case_common.long_press_by_id(driver,"com.hyphenate.chatuidemo:id/btn_press_to_speak",duration)
 
 def send_msg_txt(driver,content):
 	ret_status = False
@@ -33,12 +34,15 @@ def send_msg_txt(driver,content):
 	edit=driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_sendmessage")
 	edit.send_keys(content)
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_send").click()
-	sleep(3)
-	mylist=driver.find_elements_by_xpath("//android.widget.ListView[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
-	print "lenth of mylist is: %s" %len(mylist)
+	sleep(1)
+	
+	mylist = driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout")
+	send_index = len(mylist)-1
+	print "send_index",send_index
+
+	mylist = driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout[@index='%s']/android.widget.LinearLayout/android.widget.RelativeLayout/*" %send_index)
 	while mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/progress_bar':
-		sleep(3)
-		mylist=driver.find_elements_by_xpath("//android.widget.ListView[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
+		mylist=driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout[@index='%s']/android.widget.LinearLayout/android.widget.RelativeLayout/*" %send_index)
 	if mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/bubble':
 		print "txt message sent sucess!"
 		ret_status = True
@@ -47,7 +51,6 @@ def send_msg_txt(driver,content):
 		ret_status = True
 	elif mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/msg_status':
 		print "txt message sent failed!"
-		ret_status = False
 	
 	return ret_status
 
@@ -107,7 +110,6 @@ def send_msg_pic(driver):
 			return
 	
 	return ret_status
-
 			
 def send_msg_videoRecord(driver):
 	ret_status = False
@@ -159,11 +161,11 @@ def send_msg_videoRecord(driver):
 def find_msgReadAck(driver):
 	ret_status = False
 
-	ack_el = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/tv_ack")
-	if ack_el != []:
+	ack_elems = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/tv_ack")
+	if ack_elems != []:
 		print "Received ACK! case pass"
 		ret_status = True
-	elif ack_el == []:
+	else:
 		print "Not receive ACK! Failed!"
 
 	return ret_status
@@ -208,6 +210,7 @@ def send_msg_emoji():
 	emojiList[0].click()
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_send").click()
 	sleep(3)
+	
 	mylist=driver.find_elements_by_xpath("//android.widget.ListView[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
 	print "lenth of mylist is: %s" %len(mylist)
 	while mylist[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/progress_bar':
@@ -241,19 +244,17 @@ def send_msg_audio(driver,duration):
 
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_set_mode_voice").click()
 	sleep(1)
-	
 	record_audio(driver,duration)
-	# action1.release()
-	sleep(3)
-	# record audio
-	list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
 	sleep(1)
+	
+	list1 = driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout")
+	send_index = len(list1)-1
+	print "send index:", send_index
+	
+	list1 = driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout[@index='%s']/android.widget.LinearLayout/android.widget.RelativeLayout/*" %send_index)
 	try:
-		e1 = list1[0].get_attribute("resourceId")
-		print "element0 is: %s" %e1
 		while list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/progress_bar':
-			sleep(1)
-			list1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.RelativeLayout[@index='1']/*")
+			list1 = driver.find_elements_by_xpath("//android.widget.ListView/android.widget.LinearLayout[@index='%s']/android.widget.LinearLayout/android.widget.RelativeLayout/*" %send_index)
 		if list1[0].get_attribute("resourceId") == 'com.hyphenate.chatuidemo:id/tv_length':
 			print "Audio message sent success!"
 			ret_status = True
@@ -270,11 +271,11 @@ def send_msg_audio(driver,duration):
 def send_chatroomMsg_txt(driver,msgcontent):
 	ret_status = False
 	
-	#开始发送文本消息
 	edit=driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_sendmessage")
 	edit.send_keys(msgcontent)
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_send").click()
 	sleep(3)
+	
 	msglist = driver.find_elements_by_xpath("//android.widget.ListView[@index = '0']/*")
 	print "msglist lenth: %s" %len(msglist)
 	myindex = str(len(msglist)-1)
@@ -432,24 +433,22 @@ def send_chatroomMsg_pic(driver):
 	return ret_status
 	
 def get_last_msg_content(driver,content):
-	last_msg_el = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/tv_chatcontent")[-1]
-	content = last_msg_el.get_attribute("text")
+	last_msg_elems = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/tv_chatcontent")[-1]
+	content = last_msg_elems.get_attribute("text")
 	return content
 
 def get_conversation_list(driver):
-	name_els= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='1']")
-	msg_els= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='3']")
+	name_elems= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='1']")
+	msg_elems= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='3']")
 	
 	namelist = []
 	msglist = []
-	for el in name_els:
-		namelist.append(el.get_attribute("text"))
-	print "name list:", namelist
-	for el in msg_els:
-		msglist.append(el.get_attribute("text"))
-	print "msg list:", msglist
+	for elem in name_elems:
+		namelist.append(elem.get_attribute("text"))
+	for elem in msg_elems:
+		msglist.append(elem.get_attribute("text"))
 
-	mydic = dict(zip(namelist,msglist))
+	mydic = dict(zip(namelist, msglist))
 	print mydic
 	return mydic
 
@@ -470,16 +469,15 @@ def check_if_receivemsg(driver,fromname,msgcontent):
 	return ret_status
 
 def click_conversation(driver,fromname):
-	name_els= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='1']")
+	name_elems= driver.find_elements_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout/android.widget.TextView[@index='1']")
 	
 	namelist = []
-	for el in name_els:
+	for el in name_elems:
 		namelist.append(el.get_attribute("text"))
-	print namelist
 
 	myindex = namelist.index(fromname)
-	target_el = driver.find_element_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout[@index='%s']"%myindex)
-	target_el.click()
+	target_elem = driver.find_element_by_xpath("//android.widget.ListView[@index='2']/android.widget.RelativeLayout[@index='%s']"%myindex)
+	target_elem.click()
 
 def read_msg(driver,msgtype):
 	ret_status = False
@@ -487,24 +485,69 @@ def read_msg(driver,msgtype):
 	if msgtype == "audio":
 		driver.find_element_by_id("com.hyphenate.chatuidemo:id/bubble").click()
 		sleep(2)
-
 	elif msgtype != "text":
 		driver.find_element_by_id("com.hyphenate.chatuidemo:id/bubble").click()
 		sleep(2)
 		driver.press_keycode(4)
+	
 	ret_status = True
 	print "msg read done!"
+	return ret_status
+
+def recall_message(driver1, driver2, fromname, msgcontent):
+	ret_status = False
+
+	case_common.long_click(driver1, msgcontent)
+	driver1.find_element_by_id("com.hyphenate.chatuidemo:id/recall").click()
+	sleep(1)
+
+	xpath_id = "//android.widget.TextView[@text='This message has been recalled by %s']" %fromname
+	if case_common.findelem(driver2, xpath_id, "by_xpath"):
+		print "message recall succssful."
+		ret_status = True
+	else:
+		print "message recall fail."
 
 	return ret_status
-		
+
+def message_roaming(driver, msgcontent1, msgcontent2):
+	ret_status = False
+
+	case_common.swipeDown(driver)
+	sleep(5)
+	xpath_id1 = "//android.widget.TextView[@text='%s']" %msgcontent1
+	xpath_id2 = "//android.widget.TextView[@text='%s']" %msgcontent2
+	find_type = "by_xpath"
+
+	if case_common.findelem(driver, xpath_id1, find_type) and case_common.findelem(driver, xpath_id2, find_type):
+		print "find roaming message."
+		ret_status = True
+	else:
+		print "not find roaming message."
+
+	return ret_status
+
+def kick_by_other(driver):
+	ret_status = False
+
+	try:
+		driver.find_element_by_xpath("//android.widget.TextView[@text='The same account was loggedin in other device']")
+		print "kicked by other device, appkey support multi device."
+		ret_status = True
+	except:
+		print "not kicked by other device, appkey support multi device."
+	else:
+		driver.find_element_by_xpath("//android.widget.Button[@text='OK']").click()
+
+	return ret_status
 	
 # ///////////////////////////////////////////////////////////////////////////////////////////
 
-def test_send_msg_txt(driver,chattype,msgcontent="test msg!"):
+def test_send_msg_txt(driver, chattype, msgcontent="test msg!"):
 	print "< case start: send txt msg >"
 	ret_status = False
 	
-	if send_msg_txt(driver,msgcontent):
+	if send_msg_txt(driver, msgcontent):
 		print "< case end: pass >"
 		ret_status = True
 	else:
@@ -513,7 +556,7 @@ def test_send_msg_txt(driver,chattype,msgcontent="test msg!"):
 	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
 	return ret_status
 
-def test_send_msg_location(driver,chattype):
+def test_send_msg_location(driver, chattype):
 	print "< case start: send location msg >"
 	ret_status = False
 	
@@ -526,8 +569,7 @@ def test_send_msg_location(driver,chattype):
 	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
 	return ret_status
 
-def test_send_msg_pic(driver,chattype,msgcontent):
-
+def test_send_msg_pic(driver, chattype, msgcontent):
 	print "< case start: send picture msg >"
 	ret_status = False
 	
@@ -540,29 +582,29 @@ def test_send_msg_pic(driver,chattype,msgcontent):
 	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
 	return ret_status
 
-def test_send_msg_audio(driver,chattype,duration=8000):
-	
+def test_send_msg_audio(driver, chattype, duration=3000):
 	print "< case start: send audio msg >"
 	ret_status = False
 	
-	if send_msg_audio(driver,duration):
+	if send_msg_audio(driver, duration):
 		print "< case end: pass > "
 		ret_status = True
 	else:
 		print "< case end: fail >"
+	
 	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
 	return ret_status
 
-def test_send_chatroomMsg_txt(driver,msgcontent):
-	
+def test_send_chatroomMsg_txt(driver, msgcontent):
 	print "< case start: send chatroom txt_msg >"
 	ret_status = False
 	
-	if send_chatroomMsg_txt(driver,msgcontent):
+	if send_chatroomMsg_txt(driver, msgcontent):
 		print "< case end: pass > "
 		ret_status = True
 	else:
 		print "< case end: fail >"
+	
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
@@ -579,13 +621,11 @@ def test_send_chatroomMsg_audio(driver):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_rcv_msg(driver,fromname,msgcontent,msgtype,chattype):
-
+def test_rcv_msg(driver, fromname, msgcontent, msgtype, chattype):
 	print "< case start: receive online msg >"
-
 	ret_status = False
 
-	ret_status =  check_if_receivemsg(driver,fromname,msgcontent)
+	ret_status =  check_if_receivemsg(driver,fromname, msgcontent)
 	if ret_status == True:
 		print "< case end: pass > "
 	else:
@@ -594,12 +634,12 @@ def test_rcv_msg(driver,fromname,msgcontent,msgtype,chattype):
 	case_status[sys._getframe().f_code.co_name+"_"+msgtype+"_"+chattype] = ret_status
 	return ret_status
 
-def test_read_msg(driver,fromname,msgtype):
-
+def test_read_msg(driver, fromname, msgtype):
 	print "< caes start: read msg >"
 	ret_status = False
-	click_conversation(driver,fromname)
-	read_msg(driver,msgtype)
+	
+	click_conversation(driver, fromname)
+	read_msg(driver, msgtype)
 	ret_status = True
 
 	if ret_status == True:
@@ -610,9 +650,10 @@ def test_read_msg(driver,fromname,msgtype):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_rcv_readAck(driver,msgtype):
+def test_rcv_readAck(driver, msgtype):
 	print "< case start: receive msg readAck. >"
 	ret_status = find_msgReadAck(driver)
+	
 	if ret_status == True:
 		print "< case end: pass >"
 	else:
@@ -620,28 +661,81 @@ def test_rcv_readAck(driver,msgtype):
 
 	case_status[sys._getframe().f_code.co_name+"_"+msgtype] = ret_status
 	
+def test_recall_message(driver1, driver2, fromname, msgcontent, chattype):
+	print "< case start: recall message. >"
+	ret_status = False
+
+	if recall_message(driver1, driver2, fromname, msgcontent):
+		print "< case end: pass >"
+		ret_status = True
+	else:
+		print "< case end: fail >"
+
+	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
+
+def test_roaming_message(driver, msgcontent1, msgcontent2, chattype):
+	print "< case start: message roaming. >"
+	ret_status = False
+
+	if message_roaming(driver, msgcontent1, msgcontent2):
+		print "< case end: pass >"
+		ret_status = True
+	else:
+		print "< case end: fail >"
+
+	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
+
+def test_multidev_rcv(driver1, driver2, fromname, msgcontent, msgtype, chattype):
+	print "< case start: multi devices receive %s >" %chattype
+	ret_status = False
+
+	if test_rcv_msg(driver1, fromname, msgcontent, msgtype, chattype) and test_rcv_msg(driver2, fromname, msgcontent, msgtype, chattype):
+		print "< case end: pass >"
+		ret_status = True
+	else:
+		print "< case end: fail >"
+
+	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
+
+def test_multidev_send(driver, fromname, msgcontent, msgtype, chattype):
+	print "< case start: multi devices send %s >" %chattype
+	ret_status = False
+
+	if test_rcv_msg(driver, fromname, msgcontent, msgtype, chattype):
+		print "< case end: pass >"
+		ret_status = True
+	else:
+		print "< case end: fail >"
+
+	case_status[sys._getframe().f_code.co_name+"_"+chattype] = ret_status
+
+
 def testset_single_chat(driver1,driver2,fromname,toname):
 	print "********************************************---Single Chat---********************************************"
 	chattype = "single_chat"
 
+	case_common.del_conversation(driver1)
+	case_common.del_conversation(driver2)
+	sleep(2)
+
 	case_common.gotoContact(driver1)
 	case_common.click_name(driver1,toname)
-	msgcontent = "test msg"
-	msgtype = "text"
-
 	clear_msg(driver1)
-	
-	if test_send_msg_txt(driver1,chattype,msgcontent):
+	msgcontent = case_common.random_str(8)
+	msgtype = "text"
+		
+	if test_send_msg_txt(driver1, chattype, msgcontent):
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
+		test_rcv_msg(driver2, fromname, msgcontent, msgtype, chattype)
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_read_msg(driver2,fromname,msgtype)
+		test_read_msg(driver2, fromname, msgtype)
 		print "------------------------------------------------------------------------------------------------------------------"
+		test_rcv_readAck(driver1, msgtype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_recall_message(driver1, driver2, fromname, msgcontent, chattype)
 		clear_msg(driver2)
 		case_common.back(driver2)
-		test_rcv_readAck(driver1,msgtype)
-	
-	print "------------------------------------------------------------------------------------------------------------------"
+		print "------------------------------------------------------------------------------------------------------------------"
 	msgcontent = u"[语音]"
 	msgtype = "audio"
 
@@ -649,133 +743,152 @@ def testset_single_chat(driver1,driver2,fromname,toname):
 	sleep(2)
 	case_common.back(driver1)
 	sleep(2)
-	case_common.click_name(driver1,toname)
-	if test_send_msg_audio(driver1,chattype):
+	case_common.click_name(driver1, toname)
+	if test_send_msg_audio(driver1, chattype):
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
+		test_rcv_msg(driver2, fromname, msgcontent, msgtype, chattype)
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_read_msg(driver2,fromname,msgtype)
+		test_read_msg(driver2,fromname, msgtype)
 		print "------------------------------------------------------------------------------------------------------------------"
 		case_common.back(driver2)
-		test_rcv_readAck(driver1,msgtype)
+		test_rcv_readAck(driver1, msgtype)
 		print "------------------------------------------------------------------------------------------------------------------"
 
+	case_common.switch_messageroaming(driver2)
+	msgcontent1 = case_common.random_str(8)
+	msgcontent2 = case_common.random_str(8)
+	case_common.mode_keyboard(driver1)
+	
+	if send_msg_txt(driver1, msgcontent1) and send_msg_txt(driver1, msgcontent2):
+		click_conversation(driver2, fromname)
+		clear_msg(driver2)
+		test_roaming_message(driver2, msgcontent1, msgcontent2, chattype)
+		case_common.back(driver2)
 
-	# print "----------------------------------------------------------------------------------------------"
-
-	# msgcontent = "[%s location]" %fromname
-	# msgtype = "location"
-
-	# clear_msg(driver1)
-	# sleep(2)
-	# case_common.back(driver1)	
-	# sleep(2)
-	# case_common.click_name(driver1,toname)
-	# sleep(1)
-	# open_richMsglist(driver1)
-	# test_send_msg_location(driver1,chattype)
-	# test_rcv_msg(driver2,fromname,msgcontent,msgtype,chattype)
-	# test_read_msg(driver2,fromname,msgtype)
-	# clear_msg(driver2)
-	# case_common.back(driver2)
-	# find_msgReadAck(driver1)
-
-	# print "----------------------------------------------------------------------------------------------"
-	# msgcontent = "[Picture]"
-	# msgtype = "Picture"
-
-	# clear_msg(driver1)
-	# sleep(2)
-	# case_common.back(driver1)
-	# sleep(2)
-	# case_common.click_name(driver1, toname)
-	# open_richMsglist(driver1)
-	# test_send_msg_pic(driver1,chattype,msgcontent)
-	# test_rcv_msg(driver2, fromname, msgcontent,msgtype,chattype)
-	# test_read_msg(driver2, fromname, msgtype)
-	# clear_msg(driver2)
-	# case_common.back(driver2)
-	# find_msgReadAck(driver1)
-
+	case_common.switch_messageroaming(driver2)
 	case_common.back(driver1)
 	case_common.gotoConversation(driver1)
-
 
 def testset_group_chat(driver1, driver2, fromname, groupname):
 	chattype = "group_chat"
 	print "********************************************---Group Chat---********************************************"
 	case_common.gotoContact(driver1)
 	case_common.gotoGroup(driver1)
-	case_group.find_group(driver1,groupname)
-	case_common.click_name(driver1,groupname)
+	case_group.find_group(driver1, groupname)
+	case_common.click_name(driver1, groupname)
 	
 	print "------------------------------------------------------------------------------------------------------------------"
-	msgcontent = "group test msg"
+	msgcontent = case_common.random_str(8)
 	msgtype = "text"
 	clear_groupmsg(driver1)
-	if test_send_msg_txt(driver1,chattype,msgcontent):
+	if test_send_msg_txt(driver1, chattype, msgcontent):
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
-	
+		test_rcv_msg(driver2, groupname, msgcontent, msgtype, chattype)
+		print "------------------------------------------------------------------------------------------------------------------"
+		case_common.click_name(driver2, groupname)
+		test_recall_message(driver1, driver2, fromname, msgcontent, chattype)
+		case_common.back(driver2)	
 	print "------------------------------------------------------------------------------------------------------------------"
 	msgcontent = u"[语音]"
 	msgtype = "audio"
 
 	clear_groupmsg(driver1)
-	if test_send_msg_audio(driver1,chattype,msgcontent):
+	if test_send_msg_audio(driver1, chattype):
 		print "------------------------------------------------------------------------------------------------------------------"
-		test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)	
-	
-	# print "-------------------------------------------------------------------------------------------------"
-	# msgcontent = "[%s location]" %fromname
-	# msgtype = "location"
-	# case_common.gotoContact(driver1)
-	# case_common.gotoGroup(driver1)
-	# case_common.click_name(driver1,groupname)
-	# clear_groupmsg(driver1)
-	# open_richMsglist(driver1)
-	# test_send_msg_location(driver1,msgcontent)
-	# test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
+		test_rcv_msg(driver2, groupname, msgcontent, msgtype, chattype)
+		print "------------------------------------------------------------------------------------------------------------------"
 
-	# print "-------------------------------------------------------------------------------------------------"
-	# msgcontent = "[Picture]"
-	# msgtype = "Picture"
-	# case_common.gotoContact(driver1)
-	# case_common.gotoGroup(driver1)
-	# case_common.click_name(driver1,groupname)
-	# clear_groupmsg(driver1)
-	# open_richMsglist(driver1)
-	# test_send_msg_pic(driver1,chattype,msgcontent)
-	# test_rcv_msg(driver2,groupname,msgcontent,msgtype,chattype)
+	case_common.switch_messageroaming(driver2)
+	msgcontent1 = case_common.random_str(8)
+	msgcontent2 = case_common.random_str(8)
+	case_common.mode_keyboard(driver1)
 
+	if test_send_msg_txt(driver1, chattype, msgcontent1) and test_send_msg_txt(driver1, chattype, msgcontent2):
+		click_conversation(driver2, groupname)
+		clear_groupmsg(driver2)
+		sleep(2)
+		case_common.swipeUp(driver2)
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_roaming_message(driver2, msgcontent1, msgcontent2, chattype)
+		case_common.back(driver2)
 	
+	case_common.switch_messageroaming(driver2)
 	case_common.back(driver1)
 	sleep(1)
 	case_common.back(driver1)
 	sleep(1)
 	case_common.gotoConversation(driver1)
-	
 
-# def testset_offline_msg(driver,fromname,toname,togroupid,msgnum):
-# 	ret_status = False
-# 	tonamelist = [toname,togroupid]
-# 	if test_offline_msg(driver,fromname,tonamelist,msgnum):
-# 		ret_status =True
-# 		print "offline msg received successfully."
-# 	else:
-# 		print "offline msg not received."
-
-# 	case_status[sys._getframe().f_code.co_name] = ret_status
+def multi_devices_chat(driver1, driver2, fromname, toname, groupname):
+	print "********************************************---Multi devices Chat---********************************************"
+	chattype = "single_chat"
+	msgtype = "text"
+	msgnum = 1
+	groupid = restHelper.get_groupid(fromname, groupname)
+	case_account.switch_user(driver2, fromname)
 	
+	if not kick_by_other(driver1):
+
+		case_common.del_conversation(driver2)
+
+		restHelper.sendmsg(fromname, "rest", msgnum, msgtype='users')
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_multidev_rcv(driver1, driver2, "rest", "testmsg0", msgtype, chattype)
+
+		chattype = "group_chat"
+		restHelper.sendmsg(groupid, "rest", msgnum, msgtype="chatgroups")
+		print "------------------------------------------------------------------------------------------------------------------"
+		test_multidev_rcv(driver1, driver2, "rest", "testmsg0", msgtype, chattype)
+
+		case_common.gotoContact(driver1)
+		case_common.click_name(driver1, toname)
+		msgcontent = case_common.random_str(8)
+		chattype = "single_chat"
+		msgtype = "text"
+
+		if test_send_msg_txt(driver1, chattype, msgcontent):
+			print "------------------------------------------------------------------------------------------------------------------"
+			test_multidev_send(driver2, toname, msgcontent, msgtype, chattype)
+			print "------------------------------------------------------------------------------------------------------------------"
+
+		case_common.back(driver1)
+		case_common.gotoGroup(driver1)
+		case_group.find_group(driver1, groupname)
+		case_common.click_name(driver1, groupname)
+		chattype = "group_chat"
+		msgcontent = case_common.random_str(8)
+
+		if test_send_msg_txt(driver1, chattype, msgcontent):
+			test_multidev_send(driver2, groupname, msgcontent, msgtype, chattype)
+
+		case_common.back(driver1)
+		sleep(1)
+		case_common.back(driver1)
+		sleep(1)
+		case_common.gotoConversation(driver1)
+		case_account.switch_user(driver2, toname)
+	else:
+		case_account.switch_user(driver2, toname)
+		case_account.test_login(driver1, fromname, password="1")
 
 if __name__ == "__main__":
-	driver1 = case_common.startDemo1()
+	device_list = case_common.device_info()
 
-	case_account.test_login(driver1,"hxt001","asd")
-	# case_common.gotoContact(driver1)
-	# case_common.gotoGroup(driver1)
-	# case_common.click_name(driver1,"coco")
+	# case_common.clearAppdata(device_list[0])
+	# case_common.clearAppdata(device_list[2])
+	case_common.setappiumimput(device_list[0])
+	case_common.setappiumimput(device_list[2])
 
+	driver1 = case_common.startDemo(device_list[0], device_list[1], "4723")
+	driver2 = case_common.startDemo(device_list[2], device_list[3], "4725")
+	case_account.test_login(driver1, "bob011", "1")
+	case_account.test_login(driver2, "bob022", "1")
+
+	testset_single_chat(driver1, driver2, "bob011", "bob022")
+
+	testset_group_chat(driver1, driver2, "bob011", "GK1")
+
+	multi_devices_chat(driver1, driver2, "bob011", "bob022", "GK1")
 
 
 
