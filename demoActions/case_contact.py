@@ -34,7 +34,7 @@ def get_friendList(driver):
 	for elem in mylist:
 		friendList.append(elem.get_attribute("text"))	
 		
-	nonContactlist = ["Invitation and notification","Group chat","Channel","Robot chat"]
+	nonContactlist = ["Invitation and notification", "Group chat", "Channel", "Robot chat"]
 	for elem in nonContactlist:
 		friendList.remove(elem)
 	
@@ -108,36 +108,68 @@ def get_friendBlacklist(driver):
 	return friendBlacklist
 	
 def accept_friend_invite(driver, fromname):
-
 	mylist = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*" %fromname)
 	if mylist == []:
 		print "cannot find any notice!"
-		raise
-	for elem in mylist:
-		print elem.get_attribute("text")
-		if elem.get_attribute("text") == "Agree":
-			print "now B try to agree"
-			elem.click()
-			print "B agreed!"
-			sleep(2)
-			break
+	else:
+		for elem in mylist:
+			print elem.get_attribute("text")
+			if elem.get_attribute("text") == "Agree":
+				print "now B try to agree"
+				elem.click()
+				print "B agreed!"
+				sleep(2)
+				break
 	
 def refuse_friend_invite(driver, fromname):
-	driver2.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
-
-	mylist = driver2.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%contact)
+	mylist = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%fromname)
 	if mylist == []:
 		print "cannot find any notice!"
-		raise
-	for elem in mylist:
-		if elem.get_attribute("text") == "Refuse":
-			print "now B try to refuse"
-			elem.click()
-			print "B refused!"
-			sleep(2)
-			break
+	else:
+		for elem in mylist:
+			if elem.get_attribute("text") == "Refuse":
+				print "now B try to refuse"
+				elem.click()
+				print "B refused!"
+				sleep(2)
+				break
 			
 #///////////////////////////////////////////////////////////////////////////////////
+def test_refuse_friend(driver1, driver2, fromname, toname):
+	ret_status = False
+	print "< case start: refuse friend request >"
+
+	case_common.gotoContact(driver1)
+	add_friend(driver1, toname)
+	case_common.gotoContact(driver2)
+	case_common.find_notice(driver2, fromname)
+	refuse_friend_invite(driver2, fromname)
+
+	case_common.back(driver1)
+	case_common.back(driver2)
+
+	isContactScreen = case_common.isContactScreen(driver2) #检查是否回到了contact_list界面，如果没有回到contact list界面则：loop(等待1s，再执行一次back)
+	while not isContactScreen:
+		sleep(1)
+		case_common.back(driver2)
+		isContactScreen = case_common.isContactScreen(driver2)
+
+	mylist1 = get_friendList(driver1)
+	mylist2 = get_friendList(driver2)
+	if toname not in mylist1 and fromname not in mylist2:
+		ret_status = True
+		print "refuse friend success!"
+		print "< case end: pass >"
+	else:
+		print "refuse friend failed!"
+		print "< case end: fail >"
+
+	case_common.gotoConversation(driver1)
+	case_common.gotoConversation(driver2)
+	
+	case_status[sys._getframe().f_code.co_name] = ret_status
+	return ret_status
+
 def test_add_friend(driver1, driver2, fromname, toname):
 	ret_status = False
 	print "< case start: add frined >"
@@ -179,7 +211,7 @@ def test_del_friend(driver1, driver2, fromname, toname):
 
 	case_common.gotoContact(driver1)
 	case_common.gotoContact(driver2)
-	del_friend(driver1,toname)
+	del_friend(driver1, toname)
 	
 	mylist1 = get_friendList(driver1)
 	mylist2 = get_friendList(driver2)
@@ -202,7 +234,7 @@ def test_block_friend(driver, friendname):
 	print "< case start: block friend >"
 
 	case_common.gotoContact(driver)
-	if block_friend(driver,friendname):
+	if block_friend(driver, friendname):
 		ret_status = True
 		print "< case end: pass >"
 	else:
@@ -220,7 +252,7 @@ def test_unblock_friend(driver, friendname):
 	
 	case_common.gotoSetting(driver)
 	case_common.gotoBlacklist(driver)
-	if unblock_friend(driver,friendname):
+	if unblock_friend(driver, friendname):
 		ret_status = True
 		print "< case end: pass>"
 	else:
@@ -318,7 +350,7 @@ def test_msg_restunblock(driver1, driver2, fromname, blockname):
 	return ret_status
 
 #///////////////////////////////////////////////////////////
-def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC):
+def testset_friend(driver1, driver2, userA=accountA, userB=accountB, userC=accountC):
 	print "********************************************---Friends---********************************************"
 	fromname = userA
 	addname = userC
@@ -326,8 +358,10 @@ def testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC =
 	blockname = userB
 	unblockname = userB
 	
-	case_account.switch_user(driver2, replacename = addname)
+	case_account.switch_user(driver2, replacename=addname)
 	case_common.del_conversation(driver2)
+	print "------------------------------------------------------------------------------------------------------------------"
+	test_refuse_friend(driver1, driver2, fromname, addname)
 	print "------------------------------------------------------------------------------------------------------------------"
 	test_add_friend(driver1, driver2, fromname, addname)
 	print "------------------------------------------------------------------------------------------------------------------"
@@ -354,4 +388,4 @@ if __name__ == "__main__":
 	# case_account.test_login(driver1, "bob011", "1")
 	# case_account.test_login(driver2, "bob022", "1")
 
-	testset_friend(driver1, driver2, userA = accountA, userB = accountB, userC = accountC)
+	testset_friend(driver1, driver2, userA=accountA, userB=accountB, userC=accountC)

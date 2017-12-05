@@ -100,7 +100,7 @@ if __name__ == "__main__":
 	print "cur_path: "+cur_path
 	
 	caselist = []
-	f = open(r"./demoActions/caseList.txt","r")
+	f = open(r"./demoActions/caseList.txt", "r")
 	lines = f.readlines()
 
 	for line in lines:

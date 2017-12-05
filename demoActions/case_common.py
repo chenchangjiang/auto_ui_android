@@ -15,8 +15,8 @@ def device_info():
 	dversion1 = dinfo_dic.get(deviceid1)
 	deviceid2 = dinfo_dic.keys()[1]
 	dversion2 = dinfo_dic.get(deviceid2)
-	return [deviceid1,dversion1,deviceid2,dversion2]
-	# return [deviceid1,dversion1]
+	return [deviceid1, dversion1, deviceid2, dversion2]
+	# return [deviceid1, dversion1]
 
 def startDemo(deviceid, dversion, port):
 	desired_caps = {}
@@ -46,7 +46,7 @@ def setnonappiumimput(deviceid):
 		ime = resp[i].strip()
 		if ime != "io.appium.android.ime/.UnicodeIME" and "Permission" not in ime:
 			ime_list.append(ime)
-	resp = os.popen("adb -s %s shell ime set %s" %(deviceid,ime_list[-1])).readlines()
+	resp = os.popen("adb -s %s shell ime set %s" %(deviceid, ime_list[-1])).readlines()
 
 def setappiumimput(deviceid):
 	resp= os.popen("adb -s %s shell ime set io.appium.android.ime/.UnicodeIME" %deviceid).readlines
@@ -58,7 +58,7 @@ def gotoSetting(driver):
 def gotoBlacklist(driver):
 	text = "Black list"
 	xpath_id = "com.hyphenate.chatuidemo:id/ll_black_list"
-	elem = findelem_swipe(driver,xpath_id,text)
+	elem = findelem_swipe(driver, xpath_id, text)
 	elem.click()
 	
 def gotoContact(driver):
@@ -78,13 +78,12 @@ def isContactScreen(driver):
 	return ret_status
 
 def gotoGroup(driver):
-	groupButton = driver.find_element_by_xpath("//android.widget.TextView[@text='Group chat']")
-	groupButton.click()
+	driver.find_element_by_xpath("//android.widget.TextView[@text='Group chat']").click()
 
 def gotoInvitation(driver):
 	driver.find_element_by_xpath("//android.widget.TextView[@text='Invitation and notification']").click()
 	
-def click_name(driver,name):
+def click_name(driver, name):
 	driver.find_element_by_xpath("//android.widget.TextView[@text='%s']"%name).click()
 
 def back(driver):
@@ -99,12 +98,12 @@ def back2(driver):
 def gotoChatroomlist(driver):
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Channel']").click()
 	
-def long_click(driver,name):
+def long_click(driver, name):
 	action1 = TouchAction(driver)
 	el = driver.find_element_by_xpath("//android.widget.TextView[@text='%s']"%name)
 	action1.long_press(el).wait(2000).perform()
 	
-def long_press_by_id(driver,id,duration):
+def long_press_by_id(driver, id, duration):
 	action1 = TouchAction(driver)
 	el = driver.find_element_by_id(id)
 	action1.press(el).wait(duration).move_to(el).release().perform()
@@ -123,11 +122,11 @@ def if_logedIn(driver):
 def gotoConversation(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_conversation").click()
 	
-def search(driver,content):
+def search(driver, content):
 	el = driver.find_element_by_id("com.hyphenate.chatuidemo:id/search_bar_view")
 	el.send_keys(content)
 	
-def find_notice(driver,fromname):
+def find_notice(driver, fromname):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%fromname)
@@ -138,12 +137,12 @@ def find_notice(driver,fromname):
 	
 	return ret_status
 	
-def find_notice2(driver,fromname):
+def find_notice2(driver, fromname):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	
 	buttom_el_text0 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")[-1].get_attribute("text")
-	print "text0: ",buttom_el_text0
+	print "text0: ", buttom_el_text0
 	swipeUp(driver)
 	buttom_el_text1 = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")[-1].get_attribute("text")
 	print "text1 ", buttom_el_text1
@@ -160,13 +159,13 @@ def find_notice2(driver,fromname):
 	
 	return ret_status
 	
-def notice_accept(driver,contact):
+def notice_accept(driver, contact):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 
 	buttom_el_text0 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
-	print "text0: ",buttom_el_text0
+	print "text0: ", buttom_el_text0
 	swipeUp(driver)
 	buttom_el_text1 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
 	print "text1 ", buttom_el_text1
@@ -186,13 +185,13 @@ def notice_accept(driver,contact):
 	
 	return ret_status
 	
-def notice_refuse(driver,contact):
+def notice_refuse(driver, contact):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()	
 
 	buttom_el_text0 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
-	print "text0: ",buttom_el_text0
+	print "text0: ", buttom_el_text0
 	swipeUp(driver)
 	buttom_el_text1 = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@index = '2']")[-1].get_attribute("text")
 	print "text1 ", buttom_el_text1
@@ -210,7 +209,7 @@ def notice_refuse(driver,contact):
 	
 	return ret_status
 
-def check_onContactAgreed(driver,contact):
+def check_onContactAgreed(driver, contact):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%contact)
@@ -220,13 +219,13 @@ def check_onContactAgreed(driver,contact):
 			ret_status = True
 	return ret_status
 
-def check_onContactRefused(driver,contact): #安卓demo上没有实现相关UI信息显示，为保证case能顺利执行下去，先直接返回true
+def check_onContactRefused(driver, contact): #安卓demo上没有实现相关UI信息显示，为保证case能顺利执行下去，先直接返回true
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	ret_status = True
 	
 	return ret_status
 	
-def check_onContactInvited(driver,contact):
+def check_onContactInvited(driver, contact):
 	ret_status = False
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	list = driver.find_elements_by_xpath("//android.widget.ListView[1]//android.widget.TextView[@text='%s']/../*"%contact)
@@ -258,15 +257,15 @@ def notice_isFullscreen(driver):
 	
 	return ret_status
 
-def swipeUp(driver,start_point=3/float(4),end_point=1/float(4)):
+def swipeUp(driver, start_point=3/float(4), end_point=1/float(4)):
 	height = driver.get_window_size()["height"]
 	width = driver.get_window_size()["width"]
-	driver.swipe(width/2,height*start_point,width/2,height*end_point,1000)
+	driver.swipe(width/2, height*start_point, width/2, height*end_point,1000)
 	
-def swipeDown(driver,start_point=1/float(4),end_point=3/float(4)):
+def swipeDown(driver, start_point=1/float(4), end_point=3/float(4)):
 	height = driver.get_window_size()["height"]
 	width = driver.get_window_size()["width"]
-	driver.swipe(width/2,height*start_point,width/2,height*end_point,1000)
+	driver.swipe(width/2, height*start_point, width/2, height*end_point,1000)
 
 def historymsg_on_screen(driver):
 	msglist = []
@@ -276,7 +275,7 @@ def historymsg_on_screen(driver):
 		msglist.append(msg)
 	return msglist
 
-def name_is_inScreen(driver,name):
+def name_is_inScreen(driver, name):
 	ret_status = False
 	namelist = []
 	mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")
@@ -296,7 +295,7 @@ def del_conversation(driver):
 	except:
 		print 'No conversation to be deleted'
 
-def findelem_swipe(driver,xpath_id,text,find_type="by_id"):
+def findelem_swipe(driver, xpath_id, text, find_type="by_id"):
 	ret_status = False
 
 	try_num = 1
@@ -313,11 +312,11 @@ def findelem_swipe(driver,xpath_id,text,find_type="by_id"):
 			if try_num == 8:
 				break
 			else:
-				swipeUp(driver,5/float(6),2/float(6))
+				swipeUp(driver, 5/float(6), 2/float(6))
 				print "not find %s" %text
 				try_num = try_num + 1
 
-def findelem(driver,xpath_id,find_type="by_id"):
+def findelem(driver, xpath_id, find_type="by_id"):
 	ret_status = False
 
 	try:
@@ -327,7 +326,7 @@ def findelem(driver,xpath_id,find_type="by_id"):
 			elem = driver.find_element_by_id(xpath_id)
 		ret_status = True
 	except:
-		print "not find element"
+		print "not find expected element"
 
 	return ret_status
 
@@ -336,8 +335,8 @@ def find_customsetting(driver):
 	text1 = "appkey setting."
 	elem_id2 = "com.hyphenate.chatuidemo:id/switch_custom_server"
 	text2 = "server setting."
-	elem1 = findelem_swipe(driver,elem_id1,text1)
-	elem2 = findelem_swipe(driver,elem_id2,text2)
+	elem1 = findelem_swipe(driver, elem_id1, text1)
+	elem2 = findelem_swipe(driver, elem_id2, text2)
 
 def	change_appkeyandserver(driver, appkey, rest_server, im_server, test_env, test_type):
 	gotoSetting(driver)
@@ -390,7 +389,7 @@ def random_str(strlenth):
 def close_AutoAcceptGroupInvitation(driver):
 	text = "auto accept group invitation"
 	xpath_id = "com.hyphenate.chatuidemo:id/rl_switch_auto_accept_group_invitation"
-	elem = findelem_swipe(driver,xpath_id,text)
+	elem = findelem_swipe(driver, xpath_id, text)
 	elem.click()
 
 def switch_messageroaming(driver):
@@ -398,7 +397,7 @@ def switch_messageroaming(driver):
 
 	text = "message roaming button"
 	xpath_id = "com.hyphenate.chatuidemo:id/rl_msg_roaming"
-	elem = findelem_swipe(driver,xpath_id,text)
+	elem = findelem_swipe(driver, xpath_id, text)
 	elem.click()
 
 	gotoConversation(driver)
@@ -417,7 +416,7 @@ def all_elems(driver):
 if __name__=="__main__":
 	device_list = device_info()
 
-	driver1 = startDemo(device_list[0],device_list[1],"4723")
+	driver1 = startDemo(device_list[0], device_list[1], "4723")
 	all_elems(driver1)
 
 

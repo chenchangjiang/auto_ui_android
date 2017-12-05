@@ -8,8 +8,8 @@ import threading
 import configdata
 
 test_env = "ebs"
-appkey = "easemob-demo#coco"
-test_type = "gray"
+appkey = "easemob-demo#chatdemoui"
+test_type = "full"
 test_im = "msync"
 get_token = "yes"
 
@@ -28,7 +28,7 @@ print "appkey: ", appkey
 print "resturl: ", resturl
 print "imserver: ", imserver
 
-myheaders={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+token}
+myheaders={'Accept':'application/json', 'Content-Type':'application/json', 'Authorization':'Bearer '+token}
 
 def set_admin(groupid, membername):
 	myurl = "http://%s/%s/%s/chatgroups/%s/admin" %(resturl, org, app, groupid)
@@ -38,8 +38,8 @@ def set_admin(groupid, membername):
 		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(mydata))
 		resp.raise_for_status()
 	except requests.RequestException as e:
-		print "\t",e
-		print "\t",resp.text
+		print "\t", e
+		print "\t", resp.text
 
 def get_joinroominfo():
 	myurl = "http://%s/%s/%s/chatrooms?pagenum=1&pagesize=20" %(resturl, org, app)
@@ -203,7 +203,7 @@ def search_account(name):
 		return myresult
 		
 def sendmsg(toname, fromname='myrest', number=5, msgtype='users'):
-	myurl = "http://%s/%s/%s/messages" %(resturl,org,app)
+	myurl = "http://%s/%s/%s/messages" %(resturl, org, app)
 
 	for i in range(number):
 		msgcontent = "testmsg"+str(i)
@@ -215,7 +215,7 @@ def sendmsg(toname, fromname='myrest', number=5, msgtype='users'):
 		except requests.RequestException as e:
 			print e
 
-		time.sleep(0.8)
+		time.sleep(1)
 
 def send10chatroommsg(roomid):
 	myurl = "http://%s/%s/%s/messages" %(resturl, org, app)
@@ -403,7 +403,7 @@ def create_group(groupname, mybool1, owner, memberlist, mybool2=False):
 	try:
 		resp = requests.post(url=myurl, headers=myheaders, data=json.dumps(data))
 		resp.raise_for_status()
-		print "\trest created group: ",groupname
+		print "\trest created group: ", groupname
 	except requests.RequestException as e:
 		print e
 		print resp.text
@@ -427,7 +427,7 @@ def del_chatroom_vianame(roomname):
 		for roomid in chatroomlist:
 			try:
 				myurl = "http://%s/%s/%s/chatrooms/%s" %(resturl, org, app, roomid)
-				resp = requests.delete(url=myurl,headers=myheaders)
+				resp = requests.delete(url=myurl, headers=myheaders)
 				resp.raise_for_status()
 			except requests.RequestException as e:
 				print e

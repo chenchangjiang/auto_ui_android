@@ -10,6 +10,7 @@ def server_config(test_env, test_type, test_im):
 		"vip5":{"rest":"a1-vip5.easemob.com", "ejabberd":"im1-vip5.easemob.com", "msync":"101.37.226.88:443"},\
 		"vip6":{"rest":"a1-vip6.easemob.com", "ejabberd":"im1-vip6.easemob.com", "msync":"60.205.85.241:6717"},\
 		"vip7":{"rest":"a1-vip7.easemob.com", "ejabberd":"im1-vip7.easemob.com:5222", "msync":"msync-vip7.easemob.com:6717"},\
+		"vip8":{"rest":"a1-vip8.easemob.com","ejabberd":"im1-vip8.easemob.com:5222","msync":"msync-vip8.easemob.com:6717"},\
 		"aws":{"rest":"a1-pro4.easemob.com", "ejabberd":"im1-pro4.easemob.com:5222", "msync":"msync-pro4.easemob.com:6717"},\
 		}
 	if test_type == "gray":
@@ -42,6 +43,7 @@ def org_token(test_env,resturl):
 				"vip5":{"orgname":"vip5demoadmin", "orgpwd":"thepushbox"},\
 				"vip6":{"orgname":"admin", "orgpwd":"123456"},\
 				"vip7":{"orgname":"", "orgpwd":""},\
+				"vip8":{"orgname":"vip8demoadmin", "orgpwd":"thepushbox"},\
 				"aws":{"orgname":"admin", "orgpwd":"1234567"}				
 				}
 	orgname = parameter[test_env]["orgname"]
@@ -66,7 +68,7 @@ def env_token(test_env, get_token, resturl):
 	im_token = parameter["im_token"]
 	return [token, im_token]
 
-def rest_getorgtoken(resturl,orgname,orgpwd):
+def rest_getorgtoken(resturl, orgname, orgpwd):
 	myurl = 'http://%s/management/token' %resturl
 	token_headers = {'Accept':'application/json', 'Content-Type':'application/json'}
 	data = {"grant_type":"password", "username":orgname, "password":orgpwd}
@@ -76,5 +78,5 @@ def rest_getorgtoken(resturl,orgname,orgpwd):
 	return token
 
 if __name__ == '__main__':
-	token = org_token("ebs","a1.easemob.com")
+	token = org_token("ebs", "a1.easemob.com")
 	print token

@@ -47,7 +47,7 @@ def test_create_new_user(driver, username, password):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_login(driver, username, password):
+def  test_login(driver, username, password):
 	print("< case start : login >")
 	ret_status = False
 
@@ -115,7 +115,7 @@ def test_offline_msg(driver, fromname, toname, togroupid, msgnum):
 	
 	mylist = unread_msg_count(driver)
 	print mylist
-	if mylist == ['6','5','11']:
+	if mylist == ['6', '5', '11']:
 		print "< case end: pass > "
 		ret_status = True
 	else:
@@ -134,7 +134,7 @@ def test_online_msg(driver, fromname, toname, togroupid, msgnum):
 
 	mylist = unread_msg_count(driver)
 	print mylist
-	if mylist == ['5','5','10']:
+	if mylist == ['5', '5', '10']:
 		print "< case end: pass > "
 		ret_status = True
 	else:

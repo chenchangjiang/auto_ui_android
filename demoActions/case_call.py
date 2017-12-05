@@ -73,11 +73,16 @@ def receive_hangup(driver, name):
 
 def gotoConferencecall(driver):
 	driver.find_element_by_xpath("//android.widget.TextView[@text='Voice and video conference']").click()
-	sleep(8)
+	sleep(5)
 
-def invite_conferencecall(driver,name):
-	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_invite_join").click()
-	driver.find_element_by_xpath("//android.widget.TextView[@text='%s']" %name).click()
+def invite_conferencecall(driver, name):
+	for i in range(2):
+		driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_invite_join").click()
+		try:
+			driver.find_element_by_xpath("//android.widget.TextView[@text='%s']" %name).click()
+			break
+		except:
+			print "not in invite view."
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_ok").click()
 
 def answer_conferencecall(driver):
@@ -127,7 +132,7 @@ def mute_conference_call(driver):
 def exit_conference(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exit").click()
 
-def start_conference_vocie_call(driver1,driver2,userA,userB):
+def start_conference_vocie_call(driver1, driver2, userA, userB):
 	ret_status = False
 
 	gotoConferencecall(driver1)
@@ -280,12 +285,12 @@ if __name__ == "__main__":
 
 	device_list = case_common.device_info()
 
-	driver1 = case_common.startDemo(device_list[0],device_list[1],"4723")
-	driver2 = case_common.startDemo(device_list[2],device_list[3],"4725")
-	case_account.test_login(driver1,"bob011","1")
-	case_account.test_login(driver2,"bob022","1")
+	driver1 = case_common.startDemo(device_list[0], device_list[1], "4723")
+	driver2 = case_common.startDemo(device_list[2], device_list[3], "4725")
+	case_account.test_login(driver1,"bob011", "1")
+	case_account.test_login(driver2,"bob022", "1")
 
-	testset_call(driver1, driver2, userA = accountA, userB = accountB)
+	testset_call(driver1, driver2, userA=accountA, userB=accountB)
 
 	# case_common.gotoSetting(driver1)
 	# case_common.gotoSetting(driver2)
