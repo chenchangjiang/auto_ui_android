@@ -39,24 +39,26 @@ if __name__ == "__main__":
 		driver1 = startDemo(deviceid1, device_list[1], port1)
 		driver2 = startDemo(deviceid2, device_list[3], port2)
 
-		# testset_account(driver1)
+		testset_account(driver1)
 
 		test_login(driver1, username=accountA, password="1")
 		test_login(driver2, username=accountB, password="1")
+		del_conversation(driver1)
+		del_conversation(driver2)
 
-		# testset_single_chat(driver1, driver2, fromname=accountA, toname=accountB)
-		# testset_group_chat(driver1, driver2, fromname=accountA, groupname=dic_Group["main_group"])
-		# multi_devices_chat(driver1, driver2, fromname=accountA, toname=accountB, groupname=dic_Group["main_group"])
+		testset_call(driver1, driver2, userA=accountA, userB=accountB)
 
-		# testset_call(driver1, driver2, userA=accountA, userB=accountB)
+		testset_single_chat(driver1, driver2, fromname=accountA, toname=accountB)
+		testset_group_chat(driver1, driver2, fromname=accountA, groupname=dic_Group["main_group"])
+		multi_devices_chat(driver1, driver2, fromname=accountA, toname=accountB, groupname=dic_Group["main_group"])
 
-		# testset_friend(driver1, driver2, userA=accountA, userB=accountB, userC=accountC)
+		testset_friend(driver1, driver2, userA=accountA, userB=accountB, userC=accountC)
 		
-		# testset_chatroom(driver1, driver2, accountA, accountB)
+		testset_chatroom(driver1, driver2, accountA, accountB)
 
 		case_common.gotoSetting(driver2)
 		case_common.close_AutoAcceptGroupInvitation(driver2)
-		sleep(2)
+		sleep(1)
 		case_common.gotoConversation(driver2)
 
 		testset_group(driver1, driver2, dic_Group, isadmincase=0)

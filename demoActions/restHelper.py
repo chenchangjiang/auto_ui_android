@@ -7,7 +7,7 @@ import requests
 import threading
 import configdata
 
-test_env = "aws"
+test_env = "ebs"
 appkey = "easemob-demo#coco"
 test_type = "full"
 test_im = "msync"

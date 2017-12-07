@@ -770,6 +770,7 @@ def test_join_group(driver1, driver2, applyer, owner, groupname, approval_type):
 			print "A agreed apply."
 		else:
 			print "A not receive B join apply"
+		sleep(3)
 		case_common.back(driver1)
 		case_common.gotoConversation(driver1) 
 
@@ -965,6 +966,7 @@ def testset_group(driver1, driver2, dic_Group, isadmincase):
 			if test_join_group(driver1, driver2, applyer=userB, owner=userA, groupname="gknotapproval", approval_type="notapproval"):
 				print "------------------------------------------------------------------------------------------------------------------"
 				test_sendrcv_msg(driver1, driver2, groupname="gknotapproval")
+				print "------------------------------------------------------------------------------------------------------------------"
 		test_dismiss_group(driver1, groupname="gknotapproval", grouptype='gknotapproval')
 		print "------------------------------------------------------------------------------------------------------------------"
 

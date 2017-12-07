@@ -33,7 +33,7 @@ def startDemo(deviceid, dversion, port):
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:'+port+'/wd/hub', desired_caps)
-	driver.implicitly_wait(15)
+	driver.implicitly_wait(5)
 	return driver
 
 def clearAppdata(deviceid):
@@ -294,6 +294,10 @@ def del_conversation(driver):
 			driver.find_element_by_xpath("//android.widget.TextView[@text='Delete conversation and messages']").click()
 	except:
 		print 'No conversation to be deleted'
+
+def audio_camera_permission(driver):
+	print "allow audio or camera permission"
+	driver.find_element_by_xpath("//android.widget.Button[@text='Allow']").click()
 
 def findelem_swipe(driver, xpath_id, text, find_type="by_id"):
 	ret_status = False

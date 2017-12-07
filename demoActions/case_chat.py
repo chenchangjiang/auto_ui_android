@@ -725,10 +725,6 @@ def testset_single_chat(driver1, driver2, fromname, toname):
 	print "********************************************---Single Chat---********************************************"
 	chattype = "single_chat"
 
-	case_common.del_conversation(driver1)
-	case_common.del_conversation(driver2)
-	sleep(2)
-
 	case_common.gotoContact(driver1)
 	case_common.click_name(driver1, toname)
 	clear_msg(driver1)

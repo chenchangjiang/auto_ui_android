@@ -16,6 +16,8 @@ def dial_video(driver):
 	print "A dailed a video call."
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_more").click()
 	driver.find_element_by_xpath("//android.widget.TextView[@text='Video call']").click()
+	if driver.find_elements_by_xpath("//android.widget.Button[@text='Allow']") != []:
+		case_common.audio_camera_permission(driver)
 
 def answer_call(driver):
 	i = 1
@@ -29,12 +31,19 @@ def answer_call(driver):
 			print "B not receive call from A, can not find answer button on screen."
 			return ret_status
 		i = i+1
+
+	if driver.find_elements_by_xpath("//android.widget.Button[@text='Allow']") != []:
+		case_common.audio_camera_permission(driver)
 	
 	return ret_status
 	
-def check_in_call(driver, name):
+def check_in_call(driver, name, check_permission=None):
 	i = 1
 	ret_status = False
+
+	if check_permission != None:
+		if driver.find_elements_by_xpath("//android.widget.Button[@text='Allow']") != []:
+			case_common.audio_camera_permission(driver)
 	
 	while ret_status == False and i<=3:
 		try:
@@ -187,21 +196,19 @@ def start_conference_video_call(driver1, driver2, userA, userB):
 
 	
 #////////////////////////////////////////////////////////////////////
-def test_video_call(driver1, driver2, userA, userB):
-	print "<case start: voideo call >"
+def test_voice_call(driver1, driver2, userA, userB):
+	print "<case start: voice call >"
 	ret_status = False
 
-	dial_video(driver1)
+	dial_voice(driver1)
 	sleep(3)
 	if answer_call(driver2):
-		if check_in_call(driver2, userB) and check_in_call(driver1, userA):
-			mute_unmute(driver2)			
-			mute_unmute(driver1)
-			sleep(5)		
+		if check_in_call(driver1, userA, check_permission="yes") and check_in_call(driver2, userB):			
+			sleep(3)
 			hangup(driver2, userB)
-			sleep(5)
+			sleep(3)
 			if receive_hangup(driver1, userA):
-				print "< case end: pass >"
+				print "<case end: pass >"
 				ret_status = True
 			else:
 				hangup(driver1, userA)
@@ -217,19 +224,21 @@ def test_video_call(driver1, driver2, userA, userB):
 	case_status[sys._getframe().f_code.co_name] = ret_status
 	return ret_status
 
-def test_voice_call(driver1, driver2, userA, userB):
-	print "<case start: voice call >"
+def test_video_call(driver1, driver2, userA, userB):
+	print "<case start: voideo call >"
 	ret_status = False
 
-	dial_voice(driver1)
+	dial_video(driver1)
 	sleep(3)
 	if answer_call(driver2):
-		if check_in_call(driver1, userA) and check_in_call(driver2, userB):			
-			sleep(5)
+		if check_in_call(driver2, userB) and check_in_call(driver1, userA):
+			mute_unmute(driver2)
+			mute_unmute(driver1)
+			sleep(3)
 			hangup(driver2, userB)
-			sleep(5)
+			sleep(3)
 			if receive_hangup(driver1, userA):
-				print "<case end: pass >"
+				print "< case end: pass >"
 				ret_status = True
 			else:
 				hangup(driver1, userA)
@@ -268,8 +277,6 @@ def test_conference_video_call(driver1, driver2, userA, userB):
 		print "< case end: fail >"
 
 	case_status[sys._getframe().f_code.co_name] = ret_status
-
-
 	
 def testset_call(driver1, driver2, userA = accountA, userB = accountB):
 	print "********************************************---Voice/Video call and conference voice/video call---********************************************"
