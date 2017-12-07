@@ -5,7 +5,7 @@ import json
 def server_config(test_env, test_type, test_im):
 	config = {"ebs":{"rest":"a1.easemob.com", "ejabberd_gray":"182.92.239.119:5222", "msync_gray":"60.205.128.208:443",\
 				"ejabberd":"im1.easemob.com", "msync":"msync-im1.easemob.com"},\
-		"k8s_sdb":{"rest":"118.193.28.212:31080", "ejabberd":"118.193.28.212:31092", "msync":"118.193.28.212:31097"},\
+		"sdb":{"rest":"118.193.28.212:31080", "ejabberd":"118.193.28.212:31092", "msync":"118.193.28.212:31097"},\
 		"vip1":{"rest":"a1-vip1.easemob.com", "ejabberd":"im1-vip1.easemob.com", "msync":"msync-im1-vip1.easemob.com:443"},\
 		"vip5":{"rest":"a1-vip5.easemob.com", "ejabberd":"im1-vip5.easemob.com", "msync":"101.37.226.88:443"},\
 		"vip6":{"rest":"a1-vip6.easemob.com", "ejabberd":"im1-vip6.easemob.com", "msync":"60.205.85.241:6717"},\
@@ -36,9 +36,9 @@ def test_parameter(test_env, appkey, get_token, resturl):
     imheaders = {'Content-Type':'application/json', 'Authorization':'Bearer '+im_token}
     return [org, app, token, headers]
 
-def org_token(test_env,resturl):
+def org_token(test_env, resturl):
 	parameter = {"ebs":{"orgname":"easemobdemoadmin", "orgpwd":"thepushbox123"},\
-				"k8s_sdb":{"orgname":"easemob", "orgpwd":"easemob"},\
+				"sdb":{"orgname":"easemob", "orgpwd":"easemob"},\
 				"vip1":{"orgname":"easemobdemovip1admin", "orgpwd":"thepushbox"},\
 				"vip5":{"orgname":"vip5demoadmin", "orgpwd":"thepushbox"},\
 				"vip6":{"orgname":"admin", "orgpwd":"123456"},\
@@ -53,7 +53,7 @@ def org_token(test_env,resturl):
 
 def env_token(test_env, get_token, resturl):
 	parameter = {"ebs":{"token":"YWMtImJ7VKzAEeeBehvyqCjuuAAAAAAAAAAAAAAAAAAAAAGP-MBq3AgR45fkRZpPlqEwAQMAAAFe__NGEgBPGgB7ws_kUZrWmXNdQhY95AhP_3ODyzQDrf2zAyvAb7AaPA"},\
-                "k8s_sdb":{"token":"YWMtv82_qp0xEeeqiHXfi5VoRAAAAV_O_eCaUvYTSJDoP7zgUveIjnlRoDj-n2Y"},\
+                "sdb":{"token":"YWMtv82_qp0xEeeqiHXfi5VoRAAAAV_O_eCaUvYTSJDoP7zgUveIjnlRoDj-n2Y"},\
                 "vip1":{"token":"YWMtKjipeoL-EeekNuv9745IpgAAAV8jRw2H42rOKOMUSBYTXF2mxiIwfooVey8"},\
                 "vip5":{"token":"YWMtMq0PSq4-EeejI62A2cz8sgAAAAAAAAAAAAAAAAAAAAEQ9tSAuFkR5aTJWWIOBU6WAQMAAAFfCbsqfQBPGgCmAr-IUTMDHy56VYsGTMuGsqMJaVQgvsGRZsMJxCmSag"},\
                 "vip6":{"token":"YWMtaOrLOK4-EeeaM92Bz9Xk2gAAAWA-uh33z6v-WGf7IBzvWe1jLauP09msU90"},\

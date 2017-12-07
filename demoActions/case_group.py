@@ -16,7 +16,6 @@ import restHelper
 import case_chat
 import case_account
 
-
 def get_grouplist(driver):
 	grouplist = []
 	mylist = driver.find_elements_by_id("com.hyphenate.chatuidemo:id/name")
@@ -76,16 +75,13 @@ def find_memberElement(driver, name):
 	namelist = []
 	for i in allNameEments:
 		namelist.append(i.get_attribute("text"))
-	print namelist
 
 	len0 = len(namelist)
 	
 	ellist1 = driver.find_elements_by_xpath("//android.widget.LinearLayout[@index='0']/android.widget.GridView[@index='1']/*")
 	len1 = len(ellist1)
-	print "len1: ", len1
 
 	targetIndex = namelist.index(name) - len1
-	print "index: ", targetIndex
 	targetElement = driver.find_element_by_xpath("//android.widget.GridView[@index='3']/android.widget.RelativeLayout[@index='%s']" %str(targetIndex))
 
 	return targetElement
@@ -140,21 +136,20 @@ def add_groupmember(driver, memberlist):
 	click_addButton(driver)
 	invite_contacts_join(driver, memberlist)
 
-
 def search_group(driver, groupid):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_search").click() # 公开群列表界面 点击“搜索”按钮
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/et_search_id").send_keys(groupid) # 输入群id
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/search").click() # 搜索群
-	el = driver.find_element_by_id("com.hyphenate.chatuidemo:id/rl_searched_group") # 定位到目标群对应的元素
-	return el 
+	elem = driver.find_element_by_id("com.hyphenate.chatuidemo:id/rl_searched_group") # 定位到目标群对应的元素
+	return elem 
 
 def button_join_group(driver):
-	el = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_add_to_group")
-	return el
+	elem = driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_add_to_group")
+	return elem
 
 #//////////////////////////////////////////////////////////
 def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberlist, isadmincase, ismemberinvite):
-	ret_status = True
+	ret_status = False
 	print "< case start: add group member->agree >"
 
 	groupid = restHelper.get_groupid(testaccount, groupname)
@@ -175,11 +170,11 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 		sleep(3)
 		namelist = get_all_people(driver1)
 		for i in memberlist:
-			if i not in namelist:
+			if i in namelist:
+				ret_status = True
 				break
 	else:
 		print "B not receive group Invitation, cannot complete agree operation!"
-		ret_status = False
 
 	case_common.back(driver1)
 	sleep(1)
@@ -187,7 +182,6 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 	sleep(1)
 	case_common.back(driver1)
 	case_common.gotoConversation(driver1)
-
 	case_common.back(driver2)
 	case_common.gotoConversation(driver2)
 
@@ -204,11 +198,10 @@ def test_add_groupmember_agree(driver1, driver2, groupname, testaccount, memberl
 		else:
 			mystr = ":groupOwner"
 	case_status[sys._getframe().f_code.co_name+mystr] = ret_status
-
 	return ret_status
 
 def test_add_groupmember_refuse(driver1, driver2, groupname, testaccount, memberlist, isadmincase):
-	ret_status = True
+	ret_status = False
 	print "< case start: add group member->refuse >"
 
 	groupid = restHelper.get_groupid(testaccount, groupname)
@@ -225,8 +218,8 @@ def test_add_groupmember_refuse(driver1, driver2, groupname, testaccount, member
 	sleep(3)
 	namelist = get_all_people(driver1)
 	for i in memberlist:
-		if i in namelist:
-			ret_status = False
+		if i not in namelist:
+			ret_status = True
 			break
 
 	case_common.back(driver1)
@@ -254,7 +247,7 @@ def test_add_groupmember_refuse(driver1, driver2, groupname, testaccount, member
 
 			
 def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isadmincase):
-	ret_status = True
+	ret_status = False
 	print "< case start: del groupmember >"
 
 	groupid = restHelper.get_groupid(testaccount,groupname)
@@ -267,26 +260,23 @@ def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isad
 	goto_groupinfo(driver1)
 	
 	for i in dellist:
-		el = find_memberElement(driver1,i)
-		el.click()
+		elem = find_memberElement(driver1, i)
+		elem.click()
 		del_member(driver1)
 	sleep(3)
 	namelist = get_all_people(driver1)
 	for name in dellist:
-		if name in namelist:
-			print "not deleted user: ", name
-			ret_status = False
-			return ret_status
-	sleep(2)
-	Bgrouplist = get_grouplist(driver2)
-	if groupname in Bgrouplist:
-		ret_status = False
-		print "del groupmember failed!"
-		print "< case end: fail >"
-	
-	else:
-		print "del group member sucess!"
-		print "< case end: pass >"
+		if name not in namelist:
+			print "deleted user: ", name
+			sleep(2)
+			Bgrouplist = get_grouplist(driver2)
+			if groupname in Bgrouplist:
+				print "del groupmember failed!"
+				print "< case end: fail >"	
+			else:
+				print "del group member sucess!"
+				ret_status = True
+				print "< case end: pass >"
 
 	case_common.back(driver1)
 	sleep(1)
@@ -307,7 +297,7 @@ def test_del_groupmember(driver1, driver2, groupname, testaccount, dellist, isad
 	return ret_status
 
 def test_block_groupmember(driver1, driver2, groupname, testaccount, blockname, isadmincase):
-	ret_status = True
+	ret_status = False
 	print "< case start: block groupmember>"
 
 	groupid = restHelper.get_groupid(testaccount,groupname)
@@ -320,19 +310,19 @@ def test_block_groupmember(driver1, driver2, groupname, testaccount, blockname, 
 	case_common.click_name(driver1, groupname)
 	goto_groupinfo(driver1)
 
-	el = find_memberElement(driver1, blockname)
-	el.click()
+	elem = find_memberElement(driver1, blockname)
+	elem.click()
 	add_group_blacklist(driver1)
 
 	sleep(5)
 	Bgrouplist = get_grouplist(driver2)
-	if groupname in Bgrouplist:
-		print "Not received beBlocked notice!"
-		print "< case end: fail >"
-		ret_status = False
-	else:
-		print "Received beBlocked notice success!"
+	if groupname not in Bgrouplist:
+		print "Received beBlocked notice!"
 		print "< case end: pass >"
+		ret_status = True
+	else:
+		print "Not eceived beBlocked notice!"
+		print "< case end: fail >"
 
 	case_common.back(driver1)
 	sleep(1)
@@ -361,8 +351,8 @@ def test_unblock_groupmember(driver1, groupname, unblock_name, isadmincase):
 	case_common.click_name(driver1, groupname)
 	goto_groupinfo(driver1)
 	
-	el = find_memberElement(driver1, unblock_name)
-	el.click()
+	elem = find_memberElement(driver1, unblock_name)
+	elem.click()
 	rm_group_blacklist(driver1)
 
 	case_common.back(driver1)
@@ -402,8 +392,8 @@ def test_mute_groupmember(driver1, driver2, groupname, testaccount, mute_name, i
 	case_common.click_name(driver1, groupname)
 	goto_groupinfo(driver1)
 
-	el = find_memberElement(driver1, mute_name)
-	el.click()
+	elem = find_memberElement(driver1, mute_name)
+	elem.click()
 	mute(driver1)
 
 	case_common.gotoContact(driver2)
@@ -442,9 +432,7 @@ def test_mute_groupmember(driver1, driver2, groupname, testaccount, mute_name, i
 def test_unmute_groupmember(driver1, driver2, groupname, testaccount, unmute_name, isadmincase):
 	ret_status = False
 	print "< case start: unmute >"
-	# testaccount = "myat1"
-	# unmute_name = "myat2"
-	# groupname = "GK1"
+
 	groupid = restHelper.get_groupid(testaccount, groupname)
 
 	case_common.gotoContact(driver1)
@@ -453,8 +441,8 @@ def test_unmute_groupmember(driver1, driver2, groupname, testaccount, unmute_nam
 	case_common.click_name(driver1, groupname)
 	goto_groupinfo(driver1)
 
-	el = find_memberElement(driver1, unmute_name)
-	el.click()
+	elem = find_memberElement(driver1, unmute_name)
+	elem.click()
 	unmute(driver1)
 
 	case_common.gotoContact(driver2)
@@ -507,8 +495,8 @@ def test_add_admin(driver1, driver2, groupname, testaccount, adm_name):
 	case_common.click_name(driver2, groupname)
 	goto_groupinfo(driver2)
 
-	el = find_memberElement(driver1, adm_name)
-	el.click()
+	elem = find_memberElement(driver1, adm_name)
+	elem.click()
 	add_admin(driver1)
 	print "A added B as admin."
 	sleep(5)
@@ -559,8 +547,8 @@ def test_rm_admin(driver1, driver2, groupname, testaccount, adm_name):
 	goto_groupinfo(driver2)
 
 	# 操作：A从管理员列表里选中B，并取消管理员资格
-	el = find_adminElement(driver1, adm_name)
-	el.click()
+	elem = find_adminElement(driver1, adm_name)
+	elem.click()
 	rm_admin(driver1)
 	sleep(5)
 	# 操作完成
@@ -611,8 +599,8 @@ def test_trans_owner(driver1, driver2, groupname, testaccount, adm_name):
 	goto_groupinfo(driver2)
 
 	# 操作：A从管理员列表里选中B，并设定为群主
-	el = find_adminElement(driver1, adm_name)
-	el.click()
+	elem = find_adminElement(driver1, adm_name)
+	elem.click()
 	trans_owner(driver1)
 	sleep(5)
 	# 操作完成
@@ -710,8 +698,8 @@ def test_dismiss_group(driver1, groupname, grouptype):
 
 def test_exit_group(driver1, driver2, membername, groupname):
 	ret_status = False
-
 	print "< case start: exit group >"
+
 	case_common.gotoContact(driver1)
 	case_common.gotoGroup(driver1)
 	find_group(driver1, groupname)
@@ -756,6 +744,7 @@ def test_exit_group(driver1, driver2, membername, groupname):
 def test_join_group(driver1, driver2, applyer, owner, groupname, approval_type):
 	ret_status = False
 	print "< case start: join group >"
+	
 	groupid = restHelper.get_groupid(owner, groupname)
 
 	case_common.gotoContact(driver2)
@@ -815,7 +804,6 @@ def test_sendrcv_msg(driver1, driver2, groupname):
 	if case_chat.check_if_receivemsg(driver1, groupname, msgcontent):
 		print "< case end: pass >"
 		ret_status = True
-
 	else:
 		print "< case end: fail >"
 
@@ -826,34 +814,42 @@ def test_sendrcv_msg(driver1, driver2, groupname):
 	case_common.gotoConversation(driver2)
 
 	case_status[sys._getframe().f_code.co_name+"_"+groupname] = ret_status
-
+	return ret_status
 
 def check_groupinvite(driver, groupid):
 	ret_status = False
 	
 	driver.find_element_by_xpath("//android.widget.TextView[@text = 'Invitation and notification']").click()
 	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
-	for i in elems:
-		if i.get_attribute("text") == "Refuse":
+	for elem in elems:
+		if elem.get_attribute("text") == "Refuse":
 			ret_status = True
 	
 	return ret_status
 	
 def accept_groupinvite(driver, groupid):
+	ret_status = False
+
 	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
-	for i in elems:
-		if i.get_attribute("text") == "Agree":
-  			i.click()
+	for elem in elems:
+		if elem.get_attribute("text") == "Agree":
+  			elem.click()
 			ret_status = True
 			break
 
+	return ret_status
+
 def refuse_groupinvite(driver, groupid):	
+	ret_status = False
+	
 	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../android.widget.RelativeLayout/*"%groupid)
-	for i in elems:
-		if i.get_attribute("text") == "Refuse":
-  			i.click()
+	for elem in elems:
+		if elem.get_attribute("text") == "Refuse":
+  			elem.click()
 			ret_status = True
 			break
+
+	return ret_status
 			
 def check_groupapply(driver, groupname, username):
 	ret_status = False
@@ -862,30 +858,29 @@ def check_groupapply(driver, groupname, username):
 	# elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.TextView[0]"%groupname)
 	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.TextView[@index='0']"%groupname)
 	print "elems length:", len(elems)
-	for i in elems:
-		if i.get_attribute("text") == username:
+	for elem in elems:
+		if elem.get_attribute("text") == username:
 			ret_status = True
 	
 	return ret_status
 
 def accept_groupapply(driver, groupname):
-	
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.RelativeLayout[@index='2']/*"%groupname)
+	ret_status = False
 
-	for i in elems:
-		if i.get_attribute("text") == "Agree":
-			i.click()
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='Apply to join the group%s']/../android.widget.RelativeLayout[@index='2']/*"%groupname)
+	for elem in elems:
+		if elem.get_attribute("text") == "Agree":
+			elem.click()
 			ret_status = True
 			break
 
 def refuse_groupapply(driver, groupname):
 	ret_status = False
 	
-	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../../\
-	preceding-sibling::android.widget.RelativeLayout/*"%groupname)
-	for i in elems:
-		if i.get_attribute("text") == "Refuse":
-			i.click()
+	elems = driver.find_elements_by_xpath("//android.widget.TextView[@text='%s']/../../preceding-sibling::android.widget.RelativeLayout/*" %groupname)
+	for elem in elems:
+		if elem.get_attribute("text") == "Refuse":
+			elem.click()
 			ret_status = True
 			break
 	

@@ -76,14 +76,19 @@ def gotoConferencecall(driver):
 	sleep(5)
 
 def invite_conferencecall(driver, name):
-	for i in range(2):
+	ret_status = False
+
+	for i in range(3):
 		driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_invite_join").click()
 		try:
 			driver.find_element_by_xpath("//android.widget.TextView[@text='%s']" %name).click()
+			driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_ok").click()
+			ret_status = True
 			break
 		except:
 			print "not in invite view."
-	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_ok").click()
+	
+	return ret_status
 
 def answer_conferencecall(driver):
 	i = 1
@@ -132,19 +137,21 @@ def mute_conference_call(driver):
 def exit_conference(driver):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/btn_exit").click()
 
-def start_conference_vocie_call(driver1, driver2, userA, userB):
+def start_conference_voice_call(driver1, driver2, userA, userB):
 	ret_status = False
 
 	gotoConferencecall(driver1)
-	invite_conferencecall(driver1, userB)
-	if answer_conferencecall(driver2):
-		sleep(10)
-		if in_conference_vioicecall(driver1, userA) and in_conference_vioicecall(driver2, userB):
-			ret_status = True
+	if invite_conferencecall(driver1, userB):
+		if answer_conferencecall(driver2):
+			sleep(10)
+			if in_conference_vioicecall(driver1, userA) and in_conference_vioicecall(driver2, userB):
+				ret_status = True
+			else:
+				print "conference vocie call not establish successful."
+			exit_conference(driver2)
+			exit_conference(driver1)
 		else:
-			print "conference vocie call not establish successful."
-		exit_conference(driver2)
-		exit_conference(driver1)
+			exit_conference(driver1)
 	else:
 		exit_conference(driver1)
 
@@ -152,25 +159,27 @@ def start_conference_vocie_call(driver1, driver2, userA, userB):
 
 def start_conference_video_call(driver1, driver2, userA, userB):
 	ret_status = False
-
+	
 	gotoConferencecall(driver1)
-	invite_conferencecall(driver1, userB)
-	if answer_conferencecall(driver2):
-		sleep(10)
-		if in_conference_vioicecall(driver1, userA) and in_conference_vioicecall(driver2, userB):
-			mute_conference_call(driver1)
-			mute_conference_call(driver2)
-			conferencecall_switch(driver1)
-			conferencecall_switch(driver2)
-			sleep(5)
-			if in_conference_videocall(driver1, userA) and in_conference_videocall(driver2, userB):
-				ret_status = True
+	if invite_conferencecall(driver1, userB):
+		if answer_conferencecall(driver2):
+			sleep(10)
+			if in_conference_vioicecall(driver1, userA) and in_conference_vioicecall(driver2, userB):
+				mute_conference_call(driver1)
+				mute_conference_call(driver2)
+				conferencecall_switch(driver1)
+				conferencecall_switch(driver2)
+				sleep(5)
+				if in_conference_videocall(driver1, userA) and in_conference_videocall(driver2, userB):
+					ret_status = True
+				else:
+					print "conference video call not establish successful."
+				exit_conference(driver2)
+				exit_conference(driver1)
 			else:
-				print "conference video call not establish successful."
-			exit_conference(driver2)
-			exit_conference(driver1)
+				print "conference vocie call not establish successful."
 		else:
-			print "conference vocie call not establish successful."
+			exit_conference(driver1)
 	else:
 		exit_conference(driver1)
 
@@ -240,7 +249,7 @@ def test_conference_voice_call(driver1, driver2, userA, userB):
 	print "<case start: conference vicoe call>"
 	ret_status = False
 
-	if start_conference_vocie_call(driver1, driver2, userA, userB):
+	if start_conference_voice_call(driver1, driver2, userA, userB):
 		print "< case end: pass >"
 		ret_status = True
 	else:
@@ -280,15 +289,14 @@ def testset_call(driver1, driver2, userA = accountA, userB = accountB):
 	case_common.gotoConversation(driver1)
 
 
-
 if __name__ == "__main__":
 
 	device_list = case_common.device_info()
 
 	driver1 = case_common.startDemo(device_list[0], device_list[1], "4723")
 	driver2 = case_common.startDemo(device_list[2], device_list[3], "4725")
-	case_account.test_login(driver1,"bob011", "1")
-	case_account.test_login(driver2,"bob022", "1")
+	# case_account.test_login(driver1,"bob011", "1")
+	# case_account.test_login(driver2,"bob022", "1")
 
 	testset_call(driver1, driver2, userA=accountA, userB=accountB)
 

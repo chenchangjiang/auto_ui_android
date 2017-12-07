@@ -55,7 +55,7 @@ def  test_login(driver, username, password):
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/password").send_keys(password)
 	
 	n = 1
-	while ret_status == False and n <= 2:
+	while ret_status == False and n <= 3:
 		driver.find_element_by_xpath("//android.widget.Button[@text='Login']").click()
 		for i in range(50):
 			if i<49:
@@ -86,7 +86,7 @@ def test_logout(driver):
 	text = "logout button."
 
 	n = 1
-	while ret_status == False and n <= 2:
+	while ret_status == False and n <= 3:
 		elem = findelem_swipe(driver, xpath_id, text)
 		elem.click()
 
@@ -165,16 +165,21 @@ def testset_account(driver):
 
 if __name__ == "__main__":
 	device_list = device_info()
-	for i in range(5):
+	print device_list
+	for i in range(10):
 		clearAppdata(device_list[0])
+		clearAppdata(device_list[2])
 
 		driver1 = startDemo(device_list[0], device_list[1], "4723")
-		# driver2 = startDemo(device_list[2], device_list[3], "4725")
+		driver2 = startDemo(device_list[2], device_list[3], "4725")
 
-		test_login(driver1, "bob011", "1")
-		gotoSetting(driver1)
-		test_logout(driver1)
-		# test_login(driver2, "bob022", "1")
+		test_login(driver1, "on1", "asd")
+		test_login(driver2, "on2", "asd")
 
-	# testset_account(driver1)
+		change_appkeyandserver(driver1, "easemob-demo#coco", "rest_server", "im_server", "ebs", "full")
+		change_appkeyandserver(driver2, "easemob-demo#coco", "rest_server", "im_server", "ebs", "full")
+
+		print "----------end %s times----------\n" %i
+
+
 

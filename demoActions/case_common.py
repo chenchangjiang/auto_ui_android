@@ -33,7 +33,7 @@ def startDemo(deviceid, dversion, port):
 	desired_caps['newCommandTimeout']='2000'
 	global driver
 	driver = webdriver.Remote('http://localhost:'+port+'/wd/hub', desired_caps)
-	driver.implicitly_wait(5)
+	driver.implicitly_wait(15)
 	return driver
 
 def clearAppdata(deviceid):
@@ -340,9 +340,10 @@ def find_customsetting(driver):
 
 def	change_appkeyandserver(driver, appkey, rest_server, im_server, test_env, test_type):
 	gotoSetting(driver)
-	elems = find_customsetting(driver)
+	find_customsetting(driver)
 	sleep(2)
-	driver.find_element_by_id("com.hyphenate.chatuidemo:id/switch_custom_appkey").click()
+	# driver.find_element_by_id("com.hyphenate.chatuidemo:id/switch_custom_appkey").click() #sometimes will click other elemtnt
+	driver.find_element_by_xpath("//android.widget.TextView[@text='Set custom App key']/following-sibling::android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ImageView").click()
 	driver.find_element_by_id("com.hyphenate.chatuidemo:id/edit_custom_appkey").send_keys(appkey)
 	if test_env != "ebs" or test_type != "full":
 		driver.find_element_by_id("com.hyphenate.chatuidemo:id/switch_custom_server").click()
@@ -415,9 +416,8 @@ def all_elems(driver):
 	
 if __name__=="__main__":
 	device_list = device_info()
-
-	driver1 = startDemo(device_list[0], device_list[1], "4723")
-	all_elems(driver1)
+	print device_list
+	
 
 
 	
